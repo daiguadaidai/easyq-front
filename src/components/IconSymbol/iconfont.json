@@ -1,0 +1,44 @@
+{
+  "id": "3492131",
+  "name": "easydb",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "10055642",
+      "name": "云数据库 RDS MySQL",
+      "font_class": "yunshujukuRDSMySQL",
+      "unicode": "e7d7",
+      "unicode_decimal": 59351
+    },
+    {
+      "icon_id": "18169758",
+      "name": "数据查询,数据库查询",
+      "font_class": "data-Inquire-full",
+      "unicode": "e93f",
+      "unicode_decimal": 59711
+    },
+    {
+      "icon_id": "18169759",
+      "name": "数据查询,数据库查询",
+      "font_class": "data-Inquire",
+      "unicode": "e940",
+      "unicode_decimal": 59712
+    },
+    {
+      "icon_id": "6246302",
+      "name": "数据库",
+      "font_class": "shujuku",
+      "unicode": "e64c",
+      "unicode_decimal": 58956
+    },
+    {
+      "icon_id": "10055623",
+      "name": "分布式数据库",
+      "font_class": "fenbushishujuku",
+      "unicode": "e7d4",
+      "unicode_decimal": 59348
+    }
+  ]
+}

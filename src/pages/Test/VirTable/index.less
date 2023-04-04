@@ -1,0 +1,155 @@
+// 滚动
+.react-resizable {
+  position: relative;
+  background-clip: padding-box;
+}
+
+.react-resizable-handle {
+  position: absolute;
+  right: -5px;
+  bottom: 0;
+  z-index: 1;
+  width: 10px;
+  height: 100%;
+  cursor: col-resize;
+}
+
+.column-null-value {
+  width: 40px;
+  margin: 0 1px;
+  padding: 0.2em 0.4em;
+  font-size: 0.9em;
+  background: #e3e3ea;
+  border: 1px solid #e3e3ea;
+  border-radius: 3px;
+}
+
+.column-s4-value {
+  width: 40px;
+  margin: 0 1px;
+  padding: 0.2em 0.4em;
+  color: #f56c6c;
+  font-size: 0.9em;
+  background: #fef0f0;
+  border: 1px solid #fef0f0;
+  border-radius: 3px;
+}
+
+.virtualized-GridRow {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+}
+.virtualized-GridColumn {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+.virtualized-LeftSideGridContainer {
+  z-index: 10;
+  flex: 0 0 75px;
+}
+
+.virtualized-LeftSideGrid {
+  overflow: hidden !important;
+}
+.virtualized-HeaderGrid {
+  width: 100%;
+  overflow: hidden !important;
+  background-color: #f7f7f7;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+}
+.virtualized-BodyGrid {
+  width: 100%;
+}
+
+.virtualized-evenRow,
+.virtualized-oddRow {
+  border-bottom: 1px solid #e0e0e0;
+}
+.virtualized-oddRow {
+  background-color: #f7f7f7;
+}
+
+.virtualized-cell,
+.virtualized-headerCell,
+.virtualized-leftCell {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 0.5em;
+  font-size: 8px;
+  line-height: 24px;
+  border-right: 1px solid #e0e0e0;
+}
+.virtualized-headerCell,
+.virtualized-leftCell {
+  font-weight: bold;
+  text-align: center;
+  background-color: #f8f6f6;
+}
+
+.virtualized-span-cell {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.virtualized-DragHandle {
+  z-index: 2;
+  flex: 0 0 16px;
+  color: #0085ff;
+  cursor: col-resize;
+}
+.virtualized-DragHandle:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.virtualized-DragHandleActive,
+.virtualized-DragHandleActive:hover {
+  z-index: 3;
+  color: #0b6fcc;
+}
+
+.virtualized-DragHandleIcon {
+  display: flex;
+  flex: 0 0 12px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+}
+
+.my-result-tab-menu {
+  height: 27px;
+  line-height: normal;
+  border-radius: 5px;
+
+  & > .my-result-tab-menu-btn {
+    color: gray;
+    font-size: 13px;
+    border: unset;
+    &:hover {
+      border: unset;
+    }
+  }
+  & > .my-result-tab-menu-icon {
+    color: darkgray;
+    &:hover {
+      color: #4c84ff;
+    }
+  }
+  &:hover > .my-result-tab-menu-btn {
+    color: #4c84ff;
+  }
+}
+
+.ant-tabs.result-table-tabs
+  > .ant-tabs-bar
+  > .ant-tabs-nav-container
+  > .ant-tabs-nav-wrap
+  > .ant-tabs-nav-scroll {
+  padding-top: 5px;
+}

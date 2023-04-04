@@ -1,0 +1,34 @@
+@font-face {
+  font-family: 'iconfont'; /* Project id 3492131 */
+  src: url('iconfont.woff2?t=1660905659061') format('woff2'),
+    url('iconfont.woff?t=1660905659061') format('woff'),
+    url('iconfont.ttf?t=1660905659061') format('truetype');
+}
+
+.iconfont {
+  font-family: 'iconfont' !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-yunshujukuRDSMySQL:before {
+  content: '\e7d7';
+}
+
+.icon-data-Inquire-full:before {
+  content: '\e93f';
+}
+
+.icon-data-Inquire:before {
+  content: '\e940';
+}
+
+.icon-shujuku:before {
+  content: '\e64c';
+}
+
+.icon-fenbushishujuku:before {
+  content: '\e7d4';
+}

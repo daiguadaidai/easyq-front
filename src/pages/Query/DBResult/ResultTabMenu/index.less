@@ -1,0 +1,39 @@
+.db-result-tabs > .ant-tabs-nav > .ant-tabs-nav-wrap > .ant-tabs-nav-list {
+  & > .ant-tabs-tab {
+    & > .ant-tabs-tab-btn > .my-result-tab-menu {
+      height: 24px;
+
+      & > .my-result-tab-menu-btn {
+        color: gray;
+        font-size: 10px;
+        border: unset;
+        &:hover {
+          border: unset;
+        }
+      }
+      & > .my-result-tab-menu-icon {
+        margin: 0 5px 0 0;
+        color: darkgray;
+        font-size: 12px;
+        &:hover {
+          color: #f53663;
+        }
+      }
+      &:hover {
+        & > .my-result-tab-menu-btn {
+          color: #4c84ff;
+        }
+      }
+    }
+  }
+  & > .ant-tabs-tab.ant-tabs-tab-active {
+    & > .ant-tabs-tab-btn > .my-result-tab-menu {
+      & > .my-result-tab-menu-btn {
+        color: #4c84ff;
+        font-weight: bold;
+        font-size: 10px;
+        border: unset;
+      }
+    }
+  }
+}

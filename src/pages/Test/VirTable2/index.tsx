@@ -2,7 +2,7 @@ import { Card } from 'antd';
 import React from 'react';
 
 import { Table } from 'rsuite';
-import { mockUsers } from './mock';
+import { mockUsers } from '@/pages/Test/mock';
 import 'rsuite/dist/rsuite.css';
 
 const { Column, HeaderCell, Cell } = Table;

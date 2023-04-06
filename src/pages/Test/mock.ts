@@ -1,9 +1,10 @@
 import { faker } from '@faker-js/faker/locale/en';
-export function mockUsers(length) {
-  const createRowData = (rowIndex) => {
+export function mockUsers(length: any) {
+  const createRowData = (rowIndex: any) => {
     const firstName = faker.name.firstName();
     const lastName = faker.name.lastName();
     const gender = faker.name.gender(true);
+    // @ts-ignore
     const name = faker.name.findName(firstName, lastName, gender);
     const avatar = faker.image.avatar();
 
@@ -46,20 +47,21 @@ export function mockUsers(length) {
   });
 }
 
-export function mockTreeData(options) {
+export function mockTreeData(options: any) {
   const { limits, labels, getRowData } = options;
   const depth = limits.length;
 
-  const data = [];
-  const mock = (list, parentValue, layer = 0) => {
+  const data: any = [];
+  const mock = (list: any[], parentValue: string | undefined, layer = 0) => {
     const length = limits[layer];
     Array.from({ length }).forEach((_, index) => {
       const value = parentValue ? parentValue + '-' + (index + 1) : index + 1 + '';
-      const children = [];
+      const children: any = [];
       const label = Array.isArray(labels) ? labels[layer] : labels;
       let row = {
         label: typeof label === 'function' ? label(layer, value, faker) : label + ' ' + value,
         value,
+        children: [],
       };
 
       if (getRowData) {
@@ -78,6 +80,7 @@ export function mockTreeData(options) {
     });
   };
 
+  // @ts-ignore
   mock(data);
 
   return data;

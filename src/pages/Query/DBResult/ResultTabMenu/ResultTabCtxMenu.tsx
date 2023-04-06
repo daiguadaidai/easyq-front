@@ -1,12 +1,17 @@
-import React, { PureComponent } from 'react';
+import { PureComponent } from 'react';
 import { Menu } from 'antd';
+import PropTypes from 'prop-types';
 
 const menuHeight = 38 * 5;
 
-class ResultTabCtxMenu extends PureComponent {
-  constructor(props) {
+class ResultTabCtxMenu extends PureComponent<any, any> {
+  static propTypes = {
+    onRef: PropTypes.func,
+  };
+
+  constructor(props: any) {
     super(props);
-    this.props.onRef(this);
+    props.onRef(this);
 
     this.state = {
       ctxStyle: {
@@ -18,8 +23,8 @@ class ResultTabCtxMenu extends PureComponent {
     this.showCtx = this.showCtx.bind(this);
   }
 
-  showCtx = (ctxStyle, paneKey) => {
-    let { top } = ctxStyle;
+  showCtx = (ctxStyle: any, paneKey: any) => {
+    const { top } = ctxStyle;
     if (window.innerHeight - top < menuHeight) {
       ctxStyle.top -= menuHeight;
     }
@@ -30,7 +35,7 @@ class ResultTabCtxMenu extends PureComponent {
         paneKey,
       },
       () => {
-        const onclick = (e) => {
+        const onclick = (e: any) => {
           if (e && e.path && e.path.length) {
             this.setState({ ctxStyle: { display: 'none' } }, () => {
               // 关闭菜单后需要接触点击事件监听

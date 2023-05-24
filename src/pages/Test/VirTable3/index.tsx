@@ -1,5 +1,5 @@
 import { Card } from 'antd';
-import React from 'react';
+import React, { createRef } from 'react';
 
 import { Table } from 'rsuite';
 import { mockUsers } from '@/pages/Test/mock';
@@ -31,12 +31,20 @@ const columns = calcColumns(columnNames, 600);
 
 class Index extends React.PureComponent<any, any> {
   private ctxMenuRef: any;
+  private tableRef: any;
 
   constructor(props: any) {
     super(props);
 
     this.onCellContextMenu = this.onCellContextMenu.bind(this);
+    this.handleOnScroll = this.handleOnScroll.bind(this);
+    this.tableRef = createRef();
   }
+
+  componentDidMount = () => {
+    console.log('4000 componentDidMount');
+    this.tableRef.current.scrollTop(4000);
+  };
 
   ctxMenu = (ref: any) => {
     this.ctxMenuRef = ref;
@@ -60,10 +68,15 @@ class Index extends React.PureComponent<any, any> {
     this.ctxMenuRef.showCtx(ctxStyle);
   };
 
+  handleOnScroll = (scrollX: number, scrollY: number) => {
+    console.log(scrollX, scrollY);
+  };
+
   render() {
     return (
       <Card style={{ height: 400, width: 600 }}>
         <Table
+          ref={this.tableRef}
           data={data}
           virtualized
           height={360}
@@ -71,6 +84,7 @@ class Index extends React.PureComponent<any, any> {
           rowHeight={26}
           bordered={true}
           cellBordered={true}
+          onScroll={this.handleOnScroll}
         >
           {columns.map((column) => {
             const { key, label, width } = column;

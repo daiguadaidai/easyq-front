@@ -1,6 +1,8 @@
 // @ts-ignore
 /* eslint-disable */
 import { request } from 'umi';
+import requestNoToken from '@/utils/requestNoToken';
+import { ResponseData } from '@/utils/request';
 
 /** 获取当前的用户 GET /api/currentUser */
 export async function currentUser(options?: { [key: string]: any }) {
@@ -20,9 +22,9 @@ export async function outLogin(options?: { [key: string]: any }) {
   });
 }
 
-/** 登录接口 POST /api/login/account */
+/** 登录接口 POST /api/v1/user/login */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
-  return request<API.LoginResult>('/api/login/account', {
+  return requestNoToken<ResponseData<API.User>>('/api/v1/user/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

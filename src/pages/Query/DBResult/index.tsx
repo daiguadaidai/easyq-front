@@ -1,5 +1,5 @@
 import { Tabs } from 'antd';
-import { useEffect, useState } from 'react';
+import React from 'react';
 import ResultTabMenu from './ResultTabMenu';
 import ResultTable2 from './ResultTable2';
 
@@ -12,53 +12,85 @@ const rows = mockUsers(1000);
 const columnNames = ['id', 'firstName', 'lastName', 'gender', 'age', 'city', 'email'];
 const sql = 'SELECT * FROM t;';
 
-function DBResult(props: any) {
-  const [resultActiveKey, setResultActiveKey] = useState();
+class DBResult extends React.PureComponent<any, any> {
+  constructor(props: any) {
+    super(props);
 
-  console.log(props.dimensions);
+    this.state = {
+      resultActiveKey: '1',
+      resultMaxKey: 5,
+      resultTabs: [
+        {
+          key: '1',
+          sql,
+          columnNames,
+          rows,
+        },
+        {
+          key: '2',
+          sql: 'aaabbbccc SELECT aaa',
+          columnNames,
+          rows,
+        },
+        {
+          key: '4',
+          sql: '',
+          columnNames: [],
+          rows: [],
+        },
+      ],
+    };
 
-  useEffect(() => {}, []);
+    this.onChangeTabs = this.onChangeTabs.bind(this);
+    this.getTableResultCom = this.getTableResultCom.bind(this);
+  }
 
-  const onChangeTabs = (value: any) => {
-    setResultActiveKey(value);
+  onChangeTabs = (value: any) => {
+    this.setState({ resultActiveKey: value });
   };
 
-  const getTableResultCom = () => {
-    if (typeof props.dimensions.width == 'number' && typeof props.dimensions.height == 'number') {
+  getTableResultCom = (result: any) => {
+    if (
+      typeof this.props.dimensions.width == 'number' &&
+      typeof this.props.dimensions.height == 'number'
+    ) {
       return (
         <ResultTable2
-          width={props.dimensions.width}
-          height={props.dimensions.height - tabTitleHeight}
-          columnNames={columnNames}
-          rows={rows}
-          sql={sql}
+          width={this.props.dimensions.width}
+          height={this.props.dimensions.height - tabTitleHeight}
+          columnNames={result.columnNames}
+          rows={result.rows}
+          sql={result.sql}
         />
       );
     }
     return <></>;
   };
 
-  return (
-    <div className="db-result-content">
-      <Tabs
-        hideAdd
-        activeKey={resultActiveKey}
-        onChange={onChangeTabs}
-        type="card"
-        className="db-result-tabs"
-      >
-        <TabPane tab={<ResultTabMenu />} key="1">
-          {getTableResultCom()}
-        </TabPane>
-        <TabPane tab={<ResultTabMenu />} key="2">
-          Content of Tab Pane 2
-        </TabPane>
-        <TabPane tab={<ResultTabMenu />} key="3">
-          Content of Tab Pane 3
-        </TabPane>
-      </Tabs>
-    </div>
-  );
+  render() {
+    console.log(this.state.resultTabs);
+    return (
+      <>
+        <div className="db-result-content">
+          <Tabs
+            hideAdd
+            activeKey={this.state.resultActiveKey}
+            onChange={this.onChangeTabs}
+            type="card"
+            className="db-result-tabs"
+          >
+            {this.state.resultTabs.map((result: any) => {
+              return (
+                <TabPane tab={<ResultTabMenu />} key={`${result.key}`}>
+                  {this.getTableResultCom(result)}
+                </TabPane>
+              );
+            })}
+          </Tabs>
+        </div>
+      </>
+    );
+  }
 }
 
 export default DBResult;

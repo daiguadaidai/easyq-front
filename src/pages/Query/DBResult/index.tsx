@@ -1,16 +1,13 @@
-import { Tabs } from 'antd';
+import { message, Tabs } from 'antd';
 import React from 'react';
 import ResultTabMenu from './ResultTabMenu';
 import ResultTable2 from './ResultTable2';
 
 import './index.less';
-import { mockUsers } from '@/pages/Test/mock';
+import { getDBResultUtil } from '@/services/swagger/util';
 
 const { TabPane } = Tabs;
 const tabTitleHeight = 32;
-const rows = mockUsers(1000);
-const columnNames = ['id', 'firstName', 'lastName', 'gender', 'age', 'city', 'email'];
-const sql = 'SELECT * FROM t;';
 
 class DBResult extends React.PureComponent<any, any> {
   constructor(props: any) {
@@ -125,7 +122,7 @@ class DBResult extends React.PureComponent<any, any> {
   };
 
   // 查询sql并且获取结果
-  queryGetResult = () => {
+  queryGetResult = (metaClusterId: number, dbName: string, sql: string) => {
     // 计算需要新增的result tab
     const resultMaxKey = this.state.resultMaxKey + 1;
     const resultActiveKey = `${this.state.resultMaxKey}`;
@@ -138,6 +135,7 @@ class DBResult extends React.PureComponent<any, any> {
       loading: true,
       version: 0,
       scrollTop: 0,
+      errorMessage: '',
     };
     // 设置一个空的resultTab
     this.setState(
@@ -146,7 +144,7 @@ class DBResult extends React.PureComponent<any, any> {
         resultMaxKey,
         resultTabs: [...this.state.resultTabs, resultTab],
       },
-      () => {
+      async () => {
         // 获取tab数
         const len = this.state.resultTabs.length;
         let resultTabIndex = -1;
@@ -163,19 +161,30 @@ class DBResult extends React.PureComponent<any, any> {
         }
 
         if (resultTabIndex === -1) {
-          // @TODO
-          // 没有key的数据报错
+          message.error('新增Tab在获取结果集阶段, 没有获取到当前需要修改到Result Tab');
           return;
         }
 
-        // 查询后获取新的数据
-        const newResultTab = {
-          ...tmpResultTab,
-          sql: 'aaabbbccc SELECT aaa',
-          column_names: columnNames,
-          rows,
-          loading: false,
-        };
+        const rs = await getDBResultUtil({ sql, meta_cluster_id: metaClusterId, db_name: dbName });
+        let newResultTab = {};
+        if (rs.success) {
+          // 查询后获取新的数据
+          newResultTab = {
+            ...tmpResultTab,
+            sql: rs.data?.sql,
+            column_names: rs.data?.column_names,
+            rows: rs.data?.rows,
+            loading: false,
+          };
+        } else {
+          // 查询后获取新的数据
+          newResultTab = {
+            ...tmpResultTab,
+            sql: rs.data?.sql,
+            loading: false,
+            errorMessage: rs.message,
+          };
+        }
 
         // 获取新数据
         const newResultTabs = [...this.state.resultTabs];

@@ -22,7 +22,6 @@ declare namespace CAPI {
   };
 
   type DBResult = {
-    key?: string;
     column_names?: string[];
     sql?: string;
     rows?: Map<string, object>[];

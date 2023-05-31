@@ -142,7 +142,7 @@ class ResultTable2 extends React.PureComponent<any, any> {
                     this.onCellContextMenu(e, {
                       key,
                       label,
-                      cellData: this.props.data[key][label],
+                      cellData: this.props.rows[key][label],
                     });
                   }}
                   dataKey={label}

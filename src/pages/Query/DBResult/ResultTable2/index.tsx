@@ -55,6 +55,8 @@ class ResultTable2 extends React.PureComponent<any, any> {
     if (this.state.scrollTop !== this.props.scrollTop) {
       this.props.setResultTabValues(this.props.currKey, { scrollTop: this.state.scrollTop });
     }
+
+    this.setState = () => false;
   }
 
   ctxMenu = (ref: any) => {

@@ -18,42 +18,15 @@ class DBResult extends React.PureComponent<any, any> {
 
     this.state = {
       resultActiveKey: '1',
-      resultMaxKey: 5,
-      resultTabs: [
-        {
-          key: '1',
-          sql,
-          column_names: columnNames,
-          rows,
-          loading: false,
-          version: 0,
-          scrollTop: 0,
-        },
-        {
-          key: '2',
-          sql: 'aaabbbccc SELECT aaa',
-          column_names: columnNames,
-          rows,
-          loading: false,
-          version: 0,
-          scrollTop: 0,
-        },
-        {
-          key: '4',
-          sql: '',
-          column_names: [],
-          rows: [],
-          loading: false,
-          version: 0,
-          scrollTop: 0,
-        },
-      ],
+      resultMaxKey: 1,
+      resultTabs: [],
     };
 
     this.onChangeTabs = this.onChangeTabs.bind(this);
     this.getTableResultCom = this.getTableResultCom.bind(this);
     this.queryGetResult = this.queryGetResult.bind(this);
     this.setResultTabValues = this.setResultTabValues.bind(this);
+    this.handleOnClose = this.handleOnClose.bind(this);
   }
 
   componentDidMount = () => {
@@ -115,6 +88,42 @@ class DBResult extends React.PureComponent<any, any> {
     return <></>;
   };
 
+  handleOnClose = (key: string) => {
+    // 获取result 长度
+    const len = this.state.resultTabs.length;
+    let keyIndex = -1; // 关闭tab key所在到index
+    for (let i = 0; i < len; i++) {
+      if (key === this.state.resultTabs[i].key) {
+        keyIndex = i;
+        break;
+      }
+    }
+
+    // 获取beforeIndex
+    if (keyIndex == -1) {
+      return;
+    }
+
+    // 计算新的展示key
+    let newShowIndex = keyIndex;
+    // 关闭的是最后一个tab, 当前展示的tab index需要前移一个
+    if (keyIndex === len - 1) {
+      newShowIndex = newShowIndex - 1;
+    }
+
+    // 删除 key index 数据
+    const resultTabs = [...this.state.resultTabs];
+    resultTabs.splice(keyIndex, 1);
+
+    // 获取新的active key
+    let resultActiveKey = '-1';
+    if (newShowIndex !== -1) {
+      resultActiveKey = resultTabs[newShowIndex].key;
+    }
+
+    this.setState({ resultActiveKey, resultTabs });
+  };
+
   // 查询sql并且获取结果
   queryGetResult = () => {
     // 计算需要新增的result tab
@@ -123,7 +132,7 @@ class DBResult extends React.PureComponent<any, any> {
     // 新生成tab数据
     const resultTab = {
       key: resultActiveKey,
-      sql: '',
+      sql: sql,
       column_names: [],
       rows: [],
       loading: true,
@@ -189,7 +198,10 @@ class DBResult extends React.PureComponent<any, any> {
           >
             {this.state.resultTabs.map((result: any) => {
               return (
-                <TabPane tab={<ResultTabMenu currKey={result.key} />} key={`${result.key}`}>
+                <TabPane
+                  tab={<ResultTabMenu currKey={result.key} handleOnClose={this.handleOnClose} />}
+                  key={`${result.key}`}
+                >
                   {this.getTableResultCom(result)}
                 </TabPane>
               );

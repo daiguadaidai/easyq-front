@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 class ResultTabMenu extends PureComponent<any, any> {
   static propTypes = {
     currKey: PropTypes.string,
+    handleOnClose: PropTypes.func,
   };
 
   constructor(props: any) {
@@ -17,6 +18,7 @@ class ResultTabMenu extends PureComponent<any, any> {
   close = (e: { preventDefault: () => void; stopPropagation: () => void }) => {
     e.preventDefault();
     e.stopPropagation();
+    this.props.handleOnClose(this.props.currKey);
   };
 
   render() {

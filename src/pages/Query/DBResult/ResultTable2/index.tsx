@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef } from 'react';
 
 import { Col, Row } from 'antd';
 import { Table } from 'rsuite';
@@ -9,12 +9,18 @@ import PropTypes from 'prop-types';
 const { Column, HeaderCell, Cell } = Table;
 
 class ResultTable2 extends React.PureComponent<any, any> {
+  private tableRef: any;
+
   static propTypes = {
     height: PropTypes.number,
     width: PropTypes.number,
+    currKey: PropTypes.string,
     columnNames: PropTypes.array,
     rows: PropTypes.array,
     sql: PropTypes.string,
+    loading: PropTypes.bool,
+    scrollTop: PropTypes.number,
+    setResultTabValues: PropTypes.func,
   };
 
   private ctxMenuRef: any;
@@ -24,9 +30,31 @@ class ResultTable2 extends React.PureComponent<any, any> {
 
     this.state = {
       columns: this.calcColumns(props.columnNames, props.width),
+      scrollTop: props.scrollTop,
     };
 
+    this.tableRef = createRef();
     this.onCellContextMenu = this.onCellContextMenu.bind(this);
+    this.handleOnScroll = this.handleOnScroll.bind(this);
+  }
+
+  componentDidMount = () => {
+    if (this.props.scrollTop !== 0) {
+      this.tableRef.current.scrollTop(this.props.scrollTop);
+    }
+  };
+
+  componentDidUpdate = (prevProps: any) => {
+    // 结果有变更则更新
+    if (this.props.version !== prevProps.version) {
+      this.setState({ columns: this.calcColumns(this.props.columnNames, this.props.width) });
+    }
+  };
+
+  componentWillUnmount() {
+    if (this.state.scrollTop !== this.props.scrollTop) {
+      this.props.setResultTabValues(this.props.currKey, { scrollTop: this.state.scrollTop });
+    }
   }
 
   ctxMenu = (ref: any) => {
@@ -72,10 +100,16 @@ class ResultTable2 extends React.PureComponent<any, any> {
     console.log(event);
   };
 
+  handleOnScroll = (scrollX: number, scrollY: number) => {
+    this.setState({ scrollTop: scrollY });
+  };
+
   render() {
     return (
       <>
         <Table
+          ref={this.tableRef}
+          loading={this.props.loading}
           data={this.props.rows}
           virtualized
           height={this.props.height - 24}
@@ -84,6 +118,7 @@ class ResultTable2 extends React.PureComponent<any, any> {
           rowHeight={26}
           bordered={true}
           cellBordered={true}
+          onScroll={this.handleOnScroll}
         >
           {this.state.columns.map((column: any) => {
             const { key, label, width } = column;

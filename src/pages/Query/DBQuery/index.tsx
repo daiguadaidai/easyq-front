@@ -14,11 +14,16 @@ class DBQuery extends React.PureComponent<any, any> {
     this.state = {};
 
     this.getDBQueryDataHeight = this.getDBQueryDataHeight.bind(this);
+    this.handleRun = this.handleRun.bind(this);
   }
 
   getDBQueryDataHeight = () => {
     const { height } = this.props.dimensions;
     return `${height - 56}px`;
+  };
+
+  handleRun = () => {
+    this.props.dbResultQueryGetResult();
   };
 
   render() {
@@ -31,7 +36,12 @@ class DBQuery extends React.PureComponent<any, any> {
         </Row>
         <Row>
           <Col span={24} className="db-query-tool-col">
-            <Button size="small" type="primary" icon={<PlayCircleOutlined />}>
+            <Button
+              size="small"
+              type="primary"
+              icon={<PlayCircleOutlined />}
+              onClick={this.handleRun}
+            >
               运行
             </Button>
           </Col>

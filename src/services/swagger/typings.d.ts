@@ -20,4 +20,11 @@ declare namespace CAPI {
     created_at?: string;
     token?: string;
   };
+
+  type DBResult = {
+    key?: string;
+    column_names?: string[];
+    sql?: string;
+    rows?: Map<string, object>[];
+  };
 }

@@ -11,6 +11,25 @@ import 'react-reflex/styles.css';
 import './split-panel.less';
 
 class SplitPanel extends PureComponent {
+  private dbResultRef: any;
+
+  constructor(props: any) {
+    super(props);
+
+    this.state = {};
+
+    this.onRefDBResult = this.onRefDBResult.bind(this);
+    this.dbResultQueryGetResult = this.dbResultQueryGetResult.bind(this);
+  }
+
+  onRefDBResult = (ref: any) => {
+    this.dbResultRef = ref;
+  };
+
+  dbResultQueryGetResult = () => {
+    this.dbResultRef.queryGetResult();
+  };
+
   render() {
     return (
       <>
@@ -32,13 +51,13 @@ class SplitPanel extends PureComponent {
           <ReflexElement1>
             <ReflexContainer1 orientation="horizontal">
               <ReflexElement1 propagateDimensionsRate={20} propagateDimensions flex={0.55}>
-                <DBQuery dimensions={{}} />
+                <DBQuery dimensions={{}} dbResultQueryGetResult={this.dbResultQueryGetResult} />
               </ReflexElement1>
 
               <ReflexSplitter1 />
 
               <ReflexElement1 propagateDimensionsRate={10} propagateDimensions>
-                <DBResult />
+                <DBResult onRef={this.onRefDBResult} />
               </ReflexElement1>
             </ReflexContainer1>
           </ReflexElement1>

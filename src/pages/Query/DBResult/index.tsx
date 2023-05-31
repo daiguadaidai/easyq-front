@@ -23,30 +23,71 @@ class DBResult extends React.PureComponent<any, any> {
         {
           key: '1',
           sql,
-          columnNames,
+          column_names: columnNames,
           rows,
+          loading: false,
+          version: 0,
+          scrollTop: 0,
         },
         {
           key: '2',
           sql: 'aaabbbccc SELECT aaa',
-          columnNames,
+          column_names: columnNames,
           rows,
+          loading: false,
+          version: 0,
+          scrollTop: 0,
         },
         {
           key: '4',
           sql: '',
-          columnNames: [],
+          column_names: [],
           rows: [],
+          loading: false,
+          version: 0,
+          scrollTop: 0,
         },
       ],
     };
 
     this.onChangeTabs = this.onChangeTabs.bind(this);
     this.getTableResultCom = this.getTableResultCom.bind(this);
+    this.queryGetResult = this.queryGetResult.bind(this);
+    this.setResultTabValues = this.setResultTabValues.bind(this);
   }
+
+  componentDidMount = () => {
+    this.props.onRef(this);
+  };
 
   onChangeTabs = (value: any) => {
     this.setState({ resultActiveKey: value });
+  };
+
+  setResultTabValues = (key: string, values: any) => {
+    const len = this.state.resultTabs.length;
+    let resultTabIndex = -1;
+    let newResultTab = {};
+    for (let i = 0; i < len; i++) {
+      if (this.state.resultTabs[i].key === key) {
+        resultTabIndex = i;
+        newResultTab = {
+          ...this.state.resultTabs[i],
+          ...values,
+        };
+        break;
+      }
+    }
+
+    if (resultTabIndex === -1) {
+      // @TODO
+      // 没有key的数据报错
+      return;
+    }
+
+    const newResultTabs = [...this.state.resultTabs];
+    newResultTabs[resultTabIndex] = newResultTab;
+    this.setState({ resultTabs: newResultTabs });
   };
 
   getTableResultCom = (result: any) => {
@@ -54,21 +95,88 @@ class DBResult extends React.PureComponent<any, any> {
       typeof this.props.dimensions.width == 'number' &&
       typeof this.props.dimensions.height == 'number'
     ) {
-      return (
-        <ResultTable2
-          width={this.props.dimensions.width}
-          height={this.props.dimensions.height - tabTitleHeight}
-          columnNames={result.columnNames}
-          rows={result.rows}
-          sql={result.sql}
-        />
-      );
+      if (this.state.resultActiveKey === result.key) {
+        return (
+          <ResultTable2
+            width={this.props.dimensions.width}
+            height={this.props.dimensions.height - tabTitleHeight}
+            currKey={result.key}
+            columnNames={result.column_names}
+            rows={result.rows}
+            sql={result.sql}
+            loading={result.loading}
+            version={result.version}
+            scrollTop={result.scrollTop}
+            setResultTabValues={this.setResultTabValues}
+          />
+        );
+      }
     }
     return <></>;
   };
 
+  // 查询sql并且获取结果
+  queryGetResult = () => {
+    // 计算需要新增的result tab
+    const resultMaxKey = this.state.resultMaxKey + 1;
+    const resultActiveKey = `${this.state.resultMaxKey}`;
+    // 新生成tab数据
+    const resultTab = {
+      key: resultActiveKey,
+      sql: '',
+      column_names: [],
+      rows: [],
+      loading: true,
+      version: 0,
+      scrollTop: 0,
+    };
+    // 设置一个空的resultTab
+    this.setState(
+      {
+        resultActiveKey,
+        resultMaxKey,
+        resultTabs: [...this.state.resultTabs, resultTab],
+      },
+      () => {
+        // 获取tab数
+        const len = this.state.resultTabs.length;
+        let resultTabIndex = -1;
+        let tmpResultTab = {};
+        for (let i = 0; i < len; i++) {
+          if (this.state.resultTabs[i].key === resultActiveKey) {
+            resultTabIndex = i;
+            tmpResultTab = {
+              ...this.state.resultTabs[i],
+              version: this.state.resultTabs[i].version + 1, // 查询结果版本 +1
+            };
+            break;
+          }
+        }
+
+        if (resultTabIndex === -1) {
+          // @TODO
+          // 没有key的数据报错
+          return;
+        }
+
+        // 查询后获取新的数据
+        const newResultTab = {
+          ...tmpResultTab,
+          sql: 'aaabbbccc SELECT aaa',
+          column_names: columnNames,
+          rows,
+          loading: false,
+        };
+
+        // 获取新数据
+        const newResultTabs = [...this.state.resultTabs];
+        newResultTabs[resultTabIndex] = newResultTab;
+        this.setState({ resultTabs: newResultTabs });
+      },
+    );
+  };
+
   render() {
-    console.log(this.state.resultTabs);
     return (
       <>
         <div className="db-result-content">
@@ -81,7 +189,7 @@ class DBResult extends React.PureComponent<any, any> {
           >
             {this.state.resultTabs.map((result: any) => {
               return (
-                <TabPane tab={<ResultTabMenu />} key={`${result.key}`}>
+                <TabPane tab={<ResultTabMenu currKey={result.key} />} key={`${result.key}`}>
                   {this.getTableResultCom(result)}
                 </TabPane>
               );

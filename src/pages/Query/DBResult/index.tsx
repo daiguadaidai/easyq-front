@@ -5,11 +5,14 @@ import ResultTable2 from './ResultTable2';
 
 import './index.less';
 import { getDBResultUtil } from '@/services/swagger/util';
+import ResultTabCtxMenu from '@/pages/Query/DBResult/ResultTabMenu/ResultTabCtxMenu';
 
 const { TabPane } = Tabs;
 const tabTitleHeight = 32;
 
 class DBResult extends React.PureComponent<any, any> {
+  private colseTabCtxMenuRef: any;
+
   constructor(props: any) {
     super(props);
 
@@ -24,6 +27,7 @@ class DBResult extends React.PureComponent<any, any> {
     this.queryGetResult = this.queryGetResult.bind(this);
     this.setResultTabValues = this.setResultTabValues.bind(this);
     this.handleOnClose = this.handleOnClose.bind(this);
+    this.colseTabCtxMenu = this.colseTabCtxMenu.bind(this);
   }
 
   componentDidMount = () => {
@@ -32,6 +36,25 @@ class DBResult extends React.PureComponent<any, any> {
 
   onChangeTabs = (value: any) => {
     this.setState({ resultActiveKey: value });
+  };
+
+  colseTabCtxMenu = (ref: any) => {
+    this.colseTabCtxMenuRef = ref;
+  };
+
+  onCloseTabContextMenu = (event: React.MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+
+    // 点击事件发生时打开右键菜单
+    const { pageX, pageY } = event;
+
+    const ctxStyle = {
+      top: pageY,
+      left: pageX,
+      display: undefined,
+    };
+
+    this.colseTabCtxMenuRef.showCtx(ctxStyle);
   };
 
   setResultTabValues = (key: string, values: any) => {
@@ -208,7 +231,13 @@ class DBResult extends React.PureComponent<any, any> {
             {this.state.resultTabs.map((result: any) => {
               return (
                 <TabPane
-                  tab={<ResultTabMenu currKey={result.key} handleOnClose={this.handleOnClose} />}
+                  tab={
+                    <ResultTabMenu
+                      currKey={result.key}
+                      handleOnClose={this.handleOnClose}
+                      onCloseTabContextMenu={this.onCloseTabContextMenu}
+                    />
+                  }
                   key={`${result.key}`}
                 >
                   {this.getTableResultCom(result)}
@@ -216,6 +245,7 @@ class DBResult extends React.PureComponent<any, any> {
               );
             })}
           </Tabs>
+          <ResultTabCtxMenu onRef={this.colseTabCtxMenu} />
         </div>
       </>
     );

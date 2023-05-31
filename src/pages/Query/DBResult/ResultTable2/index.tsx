@@ -10,6 +10,7 @@ const { Column, HeaderCell, Cell } = Table;
 
 class ResultTable2 extends React.PureComponent<any, any> {
   private tableRef: any;
+  private ctxMenuRef: any;
 
   static propTypes = {
     height: PropTypes.number,
@@ -22,8 +23,6 @@ class ResultTable2 extends React.PureComponent<any, any> {
     scrollTop: PropTypes.number,
     setResultTabValues: PropTypes.func,
   };
-
-  private ctxMenuRef: any;
 
   constructor(props: any) {
     super(props);

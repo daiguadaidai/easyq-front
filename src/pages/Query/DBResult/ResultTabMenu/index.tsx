@@ -8,11 +8,14 @@ class ResultTabMenu extends PureComponent<any, any> {
   static propTypes = {
     currKey: PropTypes.string,
     handleOnClose: PropTypes.func,
+    onCloseTabContextMenu: PropTypes.func,
   };
 
   constructor(props: any) {
     super(props);
     this.state = {};
+
+    this.close = this.close.bind(this);
   }
 
   close = (e: { preventDefault: () => void; stopPropagation: () => void }) => {
@@ -23,7 +26,7 @@ class ResultTabMenu extends PureComponent<any, any> {
 
   render() {
     return (
-      <div className="my-result-tab-menu">
+      <div className="my-result-tab-menu" onContextMenu={this.props.onCloseTabContextMenu}>
         <Button className="my-result-tab-menu-btn" ghost size="small">
           查询结果 {this.props.currKey}
         </Button>

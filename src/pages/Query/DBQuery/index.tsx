@@ -6,8 +6,14 @@ import { MySQL, sql } from '@codemirror/lang-sql';
 
 import './index.less';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 class DBQuery extends React.PureComponent<any, any> {
+  static propTypes = {
+    tabPaneKey: PropTypes.string,
+    dbQueryData: PropTypes.any,
+  };
+
   constructor(props: any) {
     super(props);
 

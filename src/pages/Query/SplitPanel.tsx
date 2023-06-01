@@ -9,9 +9,17 @@ import DBResult from '@/pages/Query/DBResult';
 
 import 'react-reflex/styles.css';
 import './split-panel.less';
+import PropTypes from 'prop-types';
 
-class SplitPanel extends PureComponent {
+class SplitPanel extends PureComponent<any, any> {
   private dbResultRef: any;
+
+  static propTypes = {
+    tabPaneKey: PropTypes.string,
+    dbQueryData: PropTypes.any,
+    dbTreeData: PropTypes.any,
+    dbResultData: PropTypes.any,
+  };
 
   constructor(props: any) {
     super(props);
@@ -41,7 +49,7 @@ class SplitPanel extends PureComponent {
               <ReflexSplitter1 className="reflex-splitter-hidden" />
 
               <ReflexElement1 propagateDimensionsRate={10} propagateDimensions>
-                <DBTree />
+                <DBTree tabPaneKey={this.props.tabPaneKey} dbTreeData={this.props.dbTreeData} />
               </ReflexElement1>
             </ReflexContainer1>
           </ReflexElement1>
@@ -51,13 +59,22 @@ class SplitPanel extends PureComponent {
           <ReflexElement1>
             <ReflexContainer1 orientation="horizontal">
               <ReflexElement1 propagateDimensionsRate={20} propagateDimensions flex={0.55}>
-                <DBQuery dimensions={{}} dbResultQueryGetResult={this.dbResultQueryGetResult} />
+                <DBQuery
+                  dimensions={{}}
+                  dbResultQueryGetResult={this.dbResultQueryGetResult}
+                  tabPaneKey={this.props.tabPaneKey}
+                  dbQueryData={this.props.dbQueryData}
+                />
               </ReflexElement1>
 
               <ReflexSplitter1 />
 
               <ReflexElement1 propagateDimensionsRate={10} propagateDimensions>
-                <DBResult onRef={this.onRefDBResult} />
+                <DBResult
+                  onRef={this.onRefDBResult}
+                  tabPaneKey={this.props.tabPaneKey}
+                  dbResultData={this.props.dbResultData}
+                />
               </ReflexElement1>
             </ReflexContainer1>
           </ReflexElement1>

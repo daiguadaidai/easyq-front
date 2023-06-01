@@ -45,13 +45,6 @@ class ResultTable2 extends React.PureComponent<any, any> {
     }
   };
 
-  // componentDidUpdate = (prevProps: any) => {
-  //   // 结果有变更则更新
-  //   if (this.props.version !== prevProps.version) {
-  //     this.setState({ columns: this.calcColumns(this.props.columnNames, this.props.width) });
-  //   }
-  // };
-
   ctxMenu = (ref: any) => {
     this.ctxMenuRef = ref;
   };

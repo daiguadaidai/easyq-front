@@ -6,6 +6,7 @@ import ResultTable2 from './ResultTable2';
 import './index.less';
 import { getDBResultUtil } from '@/services/swagger/util';
 import ResultTabCtxMenu from '@/pages/Query/DBResult/ResultTabMenu/ResultTabCtxMenu';
+import PropTypes from 'prop-types';
 
 const { TabPane } = Tabs;
 const tabTitleHeight = 32;
@@ -21,7 +22,7 @@ const defaultState = {
       column_names: ['col_name_1'],
       columns: [{key:0, label:'col_name_1', width: 150}],
       rows: [
-        col_name_1: 'aacaca'
+        {col_name_1: 'aacaca'}
       ],
       loading: true,
       version: 0,
@@ -35,11 +36,16 @@ const defaultState = {
 class DBResult extends React.PureComponent<any, any> {
   private colseTabCtxMenuRef: any;
 
+  static propTypes = {
+    tabPaneKey: PropTypes.string,
+    dbResultData: PropTypes.any,
+  };
+
   constructor(props: any) {
     super(props);
 
     this.state = {
-      ...defaultState,
+      ...props.dbResultData,
     };
 
     this.onChangeTabs = this.onChangeTabs.bind(this);
@@ -260,6 +266,7 @@ class DBResult extends React.PureComponent<any, any> {
       scrollTop: 0,
       errorMessage: '',
     };
+
     // 设置一个空的resultTab
     this.setState(
       {
@@ -329,7 +336,7 @@ class DBResult extends React.PureComponent<any, any> {
             type="card"
             className="db-result-tabs"
           >
-            {this.state.resultTabs.map((result: any) => {
+            {this.state?.resultTabs?.map((result: any) => {
               return (
                 <TabPane
                   tab={

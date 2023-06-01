@@ -4,6 +4,7 @@ import { SearchOutlined } from '@ant-design/icons';
 
 import './index.less';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const dig = (path = '0', level = 1) => {
   const list = [];
@@ -26,6 +27,11 @@ const dig = (path = '0', level = 1) => {
 const treeData = dig();
 
 class DBTree extends React.PureComponent<any, any> {
+  static propTypes = {
+    tabPaneKey: PropTypes.string,
+    dbTreeData: PropTypes.any,
+  };
+
   constructor(props: any) {
     super(props);
 

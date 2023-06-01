@@ -13,7 +13,23 @@ const tabTitleHeight = 32;
 const defaultState = {
   resultActiveKey: '1',
   resultMaxKey: 1,
-  resultTabs: [],
+  resultTabs: [
+    /*
+    {
+      key: '1',
+      sql: 'SELECT * FROM t',
+      column_names: ['col_name_1'],
+      columns: [{key:0, label:'col_name_1', width: 150}],
+      rows: [
+        col_name_1: 'aacaca'
+      ],
+      loading: true,
+      version: 0,
+      scrollTop: 0,
+      errorMessage: '',
+    },
+    */
+  ],
 };
 
 class DBResult extends React.PureComponent<any, any> {
@@ -102,6 +118,7 @@ class DBResult extends React.PureComponent<any, any> {
             height={this.props.dimensions.height - tabTitleHeight}
             currKey={result.key}
             columnNames={result.column_names}
+            columns={result.columns}
             rows={result.rows}
             sql={result.sql}
             loading={result.loading}
@@ -209,6 +226,23 @@ class DBResult extends React.PureComponent<any, any> {
     this.setState({ resultActiveKey: key, resultTabs: newResultTabs });
   };
 
+  calcColumns = (columnNames: any, tableWidth: number) => {
+    const columns = [];
+    let width = 150;
+
+    if (columnNames && columnNames.length > 0) {
+      if (width * columnNames.length < tableWidth) {
+        width = tableWidth / columnNames.length;
+      }
+
+      for (let i = 0; i < columnNames.length; i++) {
+        columns.push({ key: i, label: columnNames[i], width });
+      }
+    }
+
+    return columns;
+  };
+
   // 查询sql并且获取结果
   queryGetResult = (metaClusterId: number, dbName: string, sql: string) => {
     // 计算需要新增的result tab
@@ -219,6 +253,7 @@ class DBResult extends React.PureComponent<any, any> {
       key: resultActiveKey,
       sql: sql,
       column_names: [],
+      columns: [],
       rows: [],
       loading: true,
       version: 0,
@@ -261,6 +296,7 @@ class DBResult extends React.PureComponent<any, any> {
             ...tmpResultTab,
             sql: rs.data?.sql,
             column_names: rs.data?.column_names,
+            columns: this.calcColumns(rs.data?.column_names, this.props.dimensions.width),
             rows: rs.data?.rows,
             loading: false,
           };

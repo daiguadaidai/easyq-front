@@ -19,23 +19,24 @@ class ResultTable2 extends React.PureComponent<any, any> {
     width: PropTypes.number,
     currKey: PropTypes.string,
     columnNames: PropTypes.array,
+    columns: PropTypes.array,
     rows: PropTypes.array,
     sql: PropTypes.string,
     loading: PropTypes.bool,
     scrollTop: PropTypes.number,
+    version: PropTypes.number,
     setResultTabValues: PropTypes.func,
   };
 
   constructor(props: any) {
     super(props);
 
-    this.state = {
-      columns: this.calcColumns(props.columnNames, props.width),
-    };
+    this.state = {};
 
     this.tableRef = createRef();
     this.onCellContextMenu = this.onCellContextMenu.bind(this);
     this.handleOnScroll = this.handleOnScroll.bind(this);
+    this.handleColumnResize = this.handleColumnResize.bind(this);
   }
 
   componentDidMount = () => {
@@ -44,12 +45,12 @@ class ResultTable2 extends React.PureComponent<any, any> {
     }
   };
 
-  componentDidUpdate = (prevProps: any) => {
-    // 结果有变更则更新
-    if (this.props.version !== prevProps.version) {
-      this.setState({ columns: this.calcColumns(this.props.columnNames, this.props.width) });
-    }
-  };
+  // componentDidUpdate = (prevProps: any) => {
+  //   // 结果有变更则更新
+  //   if (this.props.version !== prevProps.version) {
+  //     this.setState({ columns: this.calcColumns(this.props.columnNames, this.props.width) });
+  //   }
+  // };
 
   ctxMenu = (ref: any) => {
     this.ctxMenuRef = ref;
@@ -99,7 +100,11 @@ class ResultTable2 extends React.PureComponent<any, any> {
   };
 
   handleOnScroll = (scrollX: number, scrollY: number) => {
-    this.storeResultTableRef.resetState({ scrollTop: scrollY });
+    this.storeResultTableRef.virStoreState({ scrollTop: scrollY });
+  };
+
+  handleColumnResize = (columnWidth?: any, dataKey?: string) => {
+    this.storeResultTableRef.virStoreColumnWidth(dataKey, columnWidth);
   };
 
   render() {
@@ -118,11 +123,11 @@ class ResultTable2 extends React.PureComponent<any, any> {
           cellBordered={true}
           onScroll={this.handleOnScroll}
         >
-          {this.state.columns.map((column: any) => {
+          {this.props.columns.map((column: any) => {
             const { key, label, width } = column;
 
             return (
-              <Column key={key} width={width} resizable>
+              <Column key={key} width={width} onResize={this.handleColumnResize} resizable>
                 <HeaderCell
                   style={{
                     padding: 4,
@@ -158,10 +163,12 @@ class ResultTable2 extends React.PureComponent<any, any> {
         </Row>
         <ResultTableCtxMenu onRef={this.ctxMenu} />
         <StoreResultTable
+          columns={this.props.columns}
           onRef={this.onStoreResultTableRef}
           currKey={this.props.currKey}
           scrollTop={this.props.scrollTop}
           setResultTabValues={this.props.setResultTabValues}
+          version={this.props.version}
         />
       </>
     );

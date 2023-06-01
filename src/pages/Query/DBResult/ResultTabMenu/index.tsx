@@ -26,7 +26,10 @@ class ResultTabMenu extends PureComponent<any, any> {
 
   render() {
     return (
-      <div className="my-result-tab-menu" onContextMenu={this.props.onCloseTabContextMenu}>
+      <div
+        className="my-result-tab-menu"
+        onContextMenu={(e) => this.props.onCloseTabContextMenu(e, this.props.currKey)}
+      >
         <Button className="my-result-tab-menu-btn" ghost size="small">
           查询结果 {this.props.currKey}
         </Button>

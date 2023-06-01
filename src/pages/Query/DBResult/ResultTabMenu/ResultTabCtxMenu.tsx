@@ -30,6 +30,11 @@ const items: MenuProps['items'] = [
 class ResultTabCtxMenu extends PureComponent<any, any> {
   static propTypes = {
     onRef: PropTypes.func,
+    handleOnClose: PropTypes.func,
+    handleOnCloseAll: PropTypes.func,
+    handleOnCloseOther: PropTypes.func,
+    handleOnCloseLeft: PropTypes.func,
+    handleOnCloseRight: PropTypes.func,
   };
 
   constructor(props: any) {
@@ -40,12 +45,13 @@ class ResultTabCtxMenu extends PureComponent<any, any> {
       ctxStyle: {
         display: 'none',
       },
+      currKey: '',
     };
 
     this.showCtx = this.showCtx.bind(this);
   }
 
-  showCtx = (ctxStyle: any) => {
+  showCtx = (ctxStyle: any, currKey: string) => {
     const { top } = ctxStyle;
     if (window.innerHeight - top < menuHeight) {
       ctxStyle.top -= menuHeight;
@@ -54,6 +60,7 @@ class ResultTabCtxMenu extends PureComponent<any, any> {
     this.setState(
       {
         ctxStyle,
+        currKey,
       },
       () => {
         const onclick = () => {
@@ -76,17 +83,16 @@ class ResultTabCtxMenu extends PureComponent<any, any> {
   };
 
   onMenuClick: MenuProps['onClick'] = (info) => {
-    console.log('click ', info);
     if (info.key === '关闭当前窗口') {
-      console.log('关闭当前窗口');
+      this.props.handleOnClose(this.state.currKey);
     } else if (info.key === '关闭其他') {
-      console.log('关闭其他');
+      this.props.handleOnCloseOther(this.state.currKey);
     } else if (info.key === '关闭所有') {
-      console.log('关闭所有');
+      this.props.handleOnCloseAll();
     } else if (info.key === '关闭左侧') {
-      console.log('关闭左侧');
+      this.props.handleOnCloseLeft(this.state.currKey);
     } else if (info.key === '关闭右侧') {
-      console.log('关闭右侧');
+      this.props.handleOnCloseRight(this.state.currKey);
     }
   };
 

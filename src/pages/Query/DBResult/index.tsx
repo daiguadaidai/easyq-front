@@ -10,6 +10,12 @@ import ResultTabCtxMenu from '@/pages/Query/DBResult/ResultTabMenu/ResultTabCtxM
 const { TabPane } = Tabs;
 const tabTitleHeight = 32;
 
+const defaultState = {
+  resultActiveKey: '1',
+  resultMaxKey: 1,
+  resultTabs: [],
+};
+
 class DBResult extends React.PureComponent<any, any> {
   private colseTabCtxMenuRef: any;
 
@@ -17,17 +23,19 @@ class DBResult extends React.PureComponent<any, any> {
     super(props);
 
     this.state = {
-      resultActiveKey: '1',
-      resultMaxKey: 1,
-      resultTabs: [],
+      ...defaultState,
     };
 
     this.onChangeTabs = this.onChangeTabs.bind(this);
     this.getTableResultCom = this.getTableResultCom.bind(this);
     this.queryGetResult = this.queryGetResult.bind(this);
     this.setResultTabValues = this.setResultTabValues.bind(this);
-    this.handleOnClose = this.handleOnClose.bind(this);
     this.colseTabCtxMenu = this.colseTabCtxMenu.bind(this);
+    this.handleOnClose = this.handleOnClose.bind(this);
+    this.handleOnCloseAll = this.handleOnCloseAll.bind(this);
+    this.handleOnCloseOther = this.handleOnCloseOther.bind(this);
+    this.handleOnCloseLeft = this.handleOnCloseLeft.bind(this);
+    this.handleOnCloseRight = this.handleOnCloseRight.bind(this);
   }
 
   componentDidMount = () => {
@@ -42,7 +50,7 @@ class DBResult extends React.PureComponent<any, any> {
     this.colseTabCtxMenuRef = ref;
   };
 
-  onCloseTabContextMenu = (event: React.MouseEvent<HTMLElement>) => {
+  onCloseTabContextMenu = (event: React.MouseEvent<HTMLElement>, currKey: string) => {
     event.preventDefault();
 
     // 点击事件发生时打开右键菜单
@@ -54,7 +62,7 @@ class DBResult extends React.PureComponent<any, any> {
       display: undefined,
     };
 
-    this.colseTabCtxMenuRef.showCtx(ctxStyle);
+    this.colseTabCtxMenuRef.showCtx(ctxStyle, currKey);
   };
 
   setResultTabValues = (key: string, values: any) => {
@@ -73,8 +81,7 @@ class DBResult extends React.PureComponent<any, any> {
     }
 
     if (resultTabIndex === -1) {
-      // @TODO
-      // 没有key的数据报错
+      message.error(`设置结果值出错: key: ${key}, values: ${JSON.stringify(values)}`);
       return;
     }
 
@@ -142,6 +149,64 @@ class DBResult extends React.PureComponent<any, any> {
     }
 
     this.setState({ resultActiveKey, resultTabs });
+  };
+
+  // 关闭所有tab结果
+  handleOnCloseAll = () => {
+    this.setState({
+      ...defaultState,
+    });
+  };
+
+  // 关闭其他tab
+  handleOnCloseOther = (key: string) => {
+    const len = this.state.resultTabs.length;
+    let resultTab = {};
+    for (let i = 0; i < len; i++) {
+      if (key === this.state.resultTabs[i].key) {
+        resultTab = {
+          ...this.state.resultTabs[i],
+        };
+        break;
+      }
+    }
+
+    this.setState({ resultActiveKey: key, resultTabs: [resultTab] });
+  };
+
+  // 关闭左边
+  handleOnCloseLeft = (key: string) => {
+    const len = this.state.resultTabs.length;
+    const newResultTabs = [];
+    let canPush = false;
+    for (let i = 0; i < len; i++) {
+      if (canPush) {
+        newResultTabs.push({ ...this.state.resultTabs[i] });
+        continue;
+      }
+
+      if (key === this.state.resultTabs[i].key) {
+        newResultTabs.push({ ...this.state.resultTabs[i] });
+        canPush = true;
+      }
+    }
+
+    this.setState({ resultActiveKey: key, resultTabs: newResultTabs });
+  };
+
+  // 关闭右边
+  handleOnCloseRight = (key: string) => {
+    const len = this.state.resultTabs.length;
+    const newResultTabs = [];
+    for (let i = 0; i < len; i++) {
+      newResultTabs.push({ ...this.state.resultTabs[i] });
+
+      if (key === this.state.resultTabs[i].key) {
+        break;
+      }
+    }
+
+    this.setState({ resultActiveKey: key, resultTabs: newResultTabs });
   };
 
   // 查询sql并且获取结果
@@ -245,7 +310,14 @@ class DBResult extends React.PureComponent<any, any> {
               );
             })}
           </Tabs>
-          <ResultTabCtxMenu onRef={this.colseTabCtxMenu} />
+          <ResultTabCtxMenu
+            onRef={this.colseTabCtxMenu}
+            handleOnClose={this.handleOnClose}
+            handleOnCloseAll={this.handleOnCloseAll}
+            handleOnCloseOther={this.handleOnCloseOther}
+            handleOnCloseLeft={this.handleOnCloseLeft}
+            handleOnCloseRight={this.handleOnCloseRight}
+          />
         </div>
       </>
     );

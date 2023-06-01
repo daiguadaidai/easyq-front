@@ -5,12 +5,14 @@ import { Table } from 'rsuite';
 import 'rsuite/dist/rsuite.css';
 import ResultTableCtxMenu from '@/pages/Query/DBResult/ResultTable2/resultTableCtxMenu';
 import PropTypes from 'prop-types';
+import StoreResultTable from '@/pages/Query/DBResult/ResultTable2/StoreResultTable';
 
 const { Column, HeaderCell, Cell } = Table;
 
 class ResultTable2 extends React.PureComponent<any, any> {
   private tableRef: any;
   private ctxMenuRef: any;
+  private storeResultTableRef: any;
 
   static propTypes = {
     height: PropTypes.number,
@@ -29,7 +31,6 @@ class ResultTable2 extends React.PureComponent<any, any> {
 
     this.state = {
       columns: this.calcColumns(props.columnNames, props.width),
-      scrollTop: props.scrollTop,
     };
 
     this.tableRef = createRef();
@@ -50,16 +51,12 @@ class ResultTable2 extends React.PureComponent<any, any> {
     }
   };
 
-  componentWillUnmount() {
-    if (this.state.scrollTop !== this.props.scrollTop) {
-      this.props.setResultTabValues(this.props.currKey, { scrollTop: this.state.scrollTop });
-    }
-
-    this.setState = () => false;
-  }
-
   ctxMenu = (ref: any) => {
     this.ctxMenuRef = ref;
+  };
+
+  onStoreResultTableRef = (ref: any) => {
+    this.storeResultTableRef = ref;
   };
 
   calcColumns = (columnNames: any, tableWidth: number) => {
@@ -102,7 +99,7 @@ class ResultTable2 extends React.PureComponent<any, any> {
   };
 
   handleOnScroll = (scrollX: number, scrollY: number) => {
-    this.setState({ scrollTop: scrollY });
+    this.storeResultTableRef.resetState({ scrollTop: scrollY });
   };
 
   render() {
@@ -160,6 +157,12 @@ class ResultTable2 extends React.PureComponent<any, any> {
           </Col>
         </Row>
         <ResultTableCtxMenu onRef={this.ctxMenu} />
+        <StoreResultTable
+          onRef={this.onStoreResultTableRef}
+          currKey={this.props.currKey}
+          scrollTop={this.props.scrollTop}
+          setResultTabValues={this.props.setResultTabValues}
+        />
       </>
     );
   }

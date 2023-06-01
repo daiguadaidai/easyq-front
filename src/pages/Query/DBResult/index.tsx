@@ -64,8 +64,8 @@ class DBResult extends React.PureComponent<any, any> {
     this.props.onRef(this);
   };
 
-  onChangeTabs = (value: any) => {
-    this.setState({ resultActiveKey: value });
+  onChangeTabs = (targetKey: any) => {
+    this.setState({ resultActiveKey: targetKey });
   };
 
   colseTabCtxMenu = (ref: any) => {

@@ -54,6 +54,7 @@ class Index extends PureComponent<any, any> {
     this.addTabPane = this.addTabPane.bind(this);
     this.removeTabPane = this.removeTabPane.bind(this);
     this.getSplitPanelCom = this.getSplitPanelCom.bind(this);
+    this.setDBResultData = this.setDBResultData.bind(this);
   }
 
   addTabPane = () => {
@@ -134,8 +135,35 @@ class Index extends PureComponent<any, any> {
         dbQueryData={pane.dbQueryData}
         dbTreeData={pane.dbTreeData}
         dbResultData={pane.dbResultData}
+        setDBResultData={this.setDBResultData}
       />
     );
+  };
+
+  setDBResultData = (key: string, values: any) => {
+    const len = this.state.queryTabPanes.length;
+    let tabPaneIndex = -1;
+    let newTabPane = {};
+    for (let i = 0; i < len; i++) {
+      if (this.state.queryTabPanes[i].key === key) {
+        tabPaneIndex = i;
+        newTabPane = {
+          ...this.state.queryTabPanes[i],
+          dbResultData: { ...values },
+        };
+        break;
+      }
+    }
+
+    if (tabPaneIndex === -1) {
+      message.error(`设置查询面板结果值出错: key: ${key}, values: ${JSON.stringify(values)}`);
+      return;
+    }
+
+    const newQueryTabPanes = [...this.state.queryTabPanes];
+    newQueryTabPanes[tabPaneIndex] = newTabPane;
+
+    this.setState({ queryTabPanes: newQueryTabPanes });
   };
 
   render() {

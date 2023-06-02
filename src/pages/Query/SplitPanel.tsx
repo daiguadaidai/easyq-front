@@ -19,6 +19,7 @@ class SplitPanel extends PureComponent<any, any> {
     dbQueryData: PropTypes.any,
     dbTreeData: PropTypes.any,
     dbResultData: PropTypes.any,
+    setDBResultData: PropTypes.func,
   };
 
   constructor(props: any) {
@@ -74,6 +75,7 @@ class SplitPanel extends PureComponent<any, any> {
                   onRef={this.onRefDBResult}
                   tabPaneKey={this.props.tabPaneKey}
                   dbResultData={this.props.dbResultData}
+                  setDBResultData={this.props.setDBResultData}
                 />
               </ReflexElement1>
             </ReflexContainer1>

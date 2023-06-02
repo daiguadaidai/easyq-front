@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react';
 import './index.less';
 import SplitPanel from '@/pages/Query/SplitPanel';
 import QueryPanalTab from '@/pages/Query/components/QueryPanalTab';
+import { storeQueryData, getQueryDataFromLocalStore } from '@/utils/storage';
 
 const { TabPane } = Tabs;
 
@@ -55,7 +56,60 @@ class Index extends PureComponent<any, any> {
     this.removeTabPane = this.removeTabPane.bind(this);
     this.getSplitPanelCom = this.getSplitPanelCom.bind(this);
     this.setDBResultData = this.setDBResultData.bind(this);
+    this.getStateFromLocalStore = this.getStateFromLocalStore.bind(this);
+    this.getStateRemoveResultData = this.getStateRemoveResultData.bind(this);
   }
+
+  componentDidMount() {
+    // 从本地存储中获取数据
+    this.getStateFromLocalStore();
+  }
+
+  componentWillUnmount() {
+    // 获取没有结果集的 sate
+    const state = this.getStateRemoveResultData();
+    storeQueryData(state);
+  }
+
+  getStateRemoveResultData = () => {
+    const state = {
+      ...this.state,
+    };
+
+    const len = state.queryTabPanes.length;
+    for (let i = 0; i < len; i++) {
+      state.queryTabPanes[i].dbResultData = {
+        resultActiveKey: '1',
+        resultMaxKey: 1,
+        resultTabs: [],
+      };
+    }
+
+    return state;
+  };
+
+  getStateFromLocalStore = () => {
+    const newState = getQueryDataFromLocalStore();
+    console.log('1', newState);
+    // 没有数据
+    if (typeof newState === 'undefined' || newState === null || !newState) {
+      return;
+    }
+    console.log('2', newState);
+
+    // 没有state的数据对应的相关key则不使用 local store 数据
+    if (
+      !Reflect.has(newState, 'queryTabPaneActiveKey') ||
+      !Reflect.has(newState, 'queryTabPaneMaxKey') ||
+      !Reflect.has(newState, 'queryTabPanes') ||
+      newState.queryTabPanes?.length === 0
+    ) {
+      return;
+    }
+    console.log('3', newState);
+
+    this.setState(newState);
+  };
 
   addTabPane = () => {
     const newQueryTabPaneActiveKey = `${this.state.queryTabPaneMaxKey}`;

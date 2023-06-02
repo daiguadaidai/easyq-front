@@ -7,7 +7,7 @@ import 'rsuite/dist/rsuite.css';
 import CtxMenu from '@/pages/Test/VirTable3/ctxMenu';
 
 const { Column, HeaderCell, Cell } = Table;
-const data = mockUsers(1000);
+const data = mockUsers(1);
 
 const calcColumns = (columnNames: any, tableWidth: number) => {
   const columns = [];

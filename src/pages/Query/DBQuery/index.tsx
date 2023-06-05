@@ -1,5 +1,5 @@
 import { Button, Col, Row } from 'antd';
-import { PlayCircleOutlined } from '@ant-design/icons';
+import { ClearOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import CodeMirror from '@uiw/react-codemirror';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 import { MySQL, sql } from '@codemirror/lang-sql';
@@ -12,6 +12,7 @@ class DBQuery extends React.PureComponent<any, any> {
   static propTypes = {
     tabPaneKey: PropTypes.string,
     dbQueryData: PropTypes.any,
+    cleanDataAndLocalStore: PropTypes.func,
   };
 
   constructor(props: any) {
@@ -21,6 +22,7 @@ class DBQuery extends React.PureComponent<any, any> {
 
     this.getDBQueryDataHeight = this.getDBQueryDataHeight.bind(this);
     this.handleRun = this.handleRun.bind(this);
+    this.handleCleanCache = this.handleCleanCache.bind(this);
   }
 
   getDBQueryDataHeight = () => {
@@ -32,6 +34,10 @@ class DBQuery extends React.PureComponent<any, any> {
     this.props.dbResultQueryGetResult();
   };
 
+  handleCleanCache = () => {
+    this.props.cleanDataAndLocalStore();
+  };
+
   render() {
     return (
       <div className="db-query-content">
@@ -41,7 +47,7 @@ class DBQuery extends React.PureComponent<any, any> {
           </Col>
         </Row>
         <Row>
-          <Col span={24} className="db-query-tool-col">
+          <Col span={12} className="db-query-tool-col">
             <Button
               size="small"
               type="primary"
@@ -49,6 +55,17 @@ class DBQuery extends React.PureComponent<any, any> {
               onClick={this.handleRun}
             >
               运行
+            </Button>
+          </Col>
+          <Col span={12} className="db-query-tool-col text-right">
+            <Button
+              size="small"
+              type="dashed"
+              icon={<ClearOutlined />}
+              onClick={this.handleCleanCache}
+              ghost
+            >
+              清空缓存
             </Button>
           </Col>
         </Row>
@@ -68,43 +85,5 @@ class DBQuery extends React.PureComponent<any, any> {
     );
   }
 }
-/*
-function DBQuery(props: any) {
-  const getDBQueryDataHeight = () => {
-    const { height } = props.dimensions;
-    return `${height - 56}px`;
-  };
-
-  return (
-    <div className="db-query-content">
-      <Row>
-        <Col span={24} className="db-query-title-col">
-          <span className="db-query-title-col-method">MySQL 查询</span>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={24} className="db-query-tool-col">
-          <Button size="small" type="primary" icon={<PlayCircleOutlined />}>
-            运行
-          </Button>
-        </Col>
-      </Row>
-      <Row>
-        <Col span={24}>
-          <CodeMirror
-            className="db-query-codemiror"
-            value={''}
-            height={getDBQueryDataHeight()}
-            editable={true}
-            extensions={[sql({ dialect: MySQL, upperCaseKeywords: true })]}
-            theme={oneDarkTheme}
-          />
-        </Col>
-      </Row>
-    </div>
-  );
-}
-
- */
 
 export default DBQuery;

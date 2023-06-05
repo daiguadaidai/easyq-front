@@ -108,7 +108,7 @@ class DBResult extends React.PureComponent<any, any> {
     }
 
     if (resultTabIndex === -1) {
-      message.error(`设置结果值出错: key: ${key}, values: ${JSON.stringify(values)}`);
+      // message.error(`设置结果值出错: key: ${key}, values: ${JSON.stringify(values)}`);
       return;
     }
 

@@ -3,7 +3,11 @@ import React, { PureComponent } from 'react';
 import './index.less';
 import SplitPanel from '@/pages/Query/SplitPanel';
 import QueryPanalTab from '@/pages/Query/components/QueryPanalTab';
-import { storeQueryData, getQueryDataFromLocalStore } from '@/utils/storage';
+import {
+  storeQueryData,
+  getQueryDataFromLocalStore,
+  cleanQueryDataToLocalStore,
+} from '@/utils/storage';
 
 const { TabPane } = Tabs;
 
@@ -58,6 +62,7 @@ class Index extends PureComponent<any, any> {
     this.setDBResultData = this.setDBResultData.bind(this);
     this.getStateFromLocalStore = this.getStateFromLocalStore.bind(this);
     this.getStateRemoveResultData = this.getStateRemoveResultData.bind(this);
+    this.cleanDataAndLocalStore = this.cleanDataAndLocalStore.bind(this);
   }
 
   componentDidMount() {
@@ -90,12 +95,10 @@ class Index extends PureComponent<any, any> {
 
   getStateFromLocalStore = () => {
     const newState = getQueryDataFromLocalStore();
-    console.log('1', newState);
     // 没有数据
     if (typeof newState === 'undefined' || newState === null || !newState) {
       return;
     }
-    console.log('2', newState);
 
     // 没有state的数据对应的相关key则不使用 local store 数据
     if (
@@ -106,9 +109,13 @@ class Index extends PureComponent<any, any> {
     ) {
       return;
     }
-    console.log('3', newState);
 
     this.setState(newState);
+  };
+
+  cleanDataAndLocalStore = () => {
+    this.setState({ ...defaultState });
+    cleanQueryDataToLocalStore();
   };
 
   addTabPane = () => {
@@ -190,6 +197,7 @@ class Index extends PureComponent<any, any> {
         dbTreeData={pane.dbTreeData}
         dbResultData={pane.dbResultData}
         setDBResultData={this.setDBResultData}
+        cleanDataAndLocalStore={this.cleanDataAndLocalStore}
       />
     );
   };
@@ -210,7 +218,7 @@ class Index extends PureComponent<any, any> {
     }
 
     if (tabPaneIndex === -1) {
-      message.error(`设置查询面板结果值出错: key: ${key}, values: ${JSON.stringify(values)}`);
+      // message.error(`设置查询面板结果值出错: key: ${key}, values: ${JSON.stringify(values)}`);
       return;
     }
 

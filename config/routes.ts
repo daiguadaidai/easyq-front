@@ -20,6 +20,12 @@
     component: './Test/VirTable3',
   },
   {
+    path: '/priv',
+    name: 'priv',
+    icon: 'team',
+    component: './Priv/PrivApply',
+  },
+  {
     path: '/query',
     name: 'query',
     icon: 'fileSearch',

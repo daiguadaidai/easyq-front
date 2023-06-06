@@ -10,16 +10,22 @@ export const getAddr = (host: string, port: number) => {
 
 export const getClusterNameSelectOption = (
   name: string,
-  set_name: string,
-  category: string,
+  vip_port: string,
   cluster_id: string,
+  set_name: string,
+  category?: string | undefined,
 ) => {
   let tmpName = '-';
+  let tmpVipPort = '-';
   let tmpSetName = '-';
-  let tmpCategory = '-';
+  let tmpCategory: string | undefined = '-';
   let tmpClusterId = '-';
   if (name && name !== '') {
     tmpName = name;
+  }
+
+  if (vip_port && vip_port !== '') {
+    tmpVipPort = vip_port;
   }
 
   if (set_name && set_name !== '') {
@@ -34,11 +40,11 @@ export const getClusterNameSelectOption = (
     tmpClusterId = cluster_id;
   }
 
-  return tmpClusterId + ' | ' + tmpName + ' | ' + tmpSetName + ' | ' + tmpCategory;
+  return `${tmpName} | ${tmpVipPort} | ${tmpClusterId} | ${tmpSetName} | ${tmpCategory}`;
 };
 
 // 返回 key=value&key1=value1
-export const getUrlQueryStr = (params) => {
+export const getUrlQueryStr = (params: any) => {
   // 键值对字符串, [key=value, key1=value1]
 
   const pairStrs = [];
@@ -52,9 +58,9 @@ export const getUrlQueryStr = (params) => {
 };
 
 // 设置地址栏
-export const setPropsLocationUrl = (params) => {
+export const setPropsLocationUrl = (params: any) => {
   const newUrl = `${window.location.origin}${window.location.pathname}?${getUrlQueryStr(params)}`;
-  window.history.pushState(null, null, newUrl);
+  window.history.pushState(null, '', newUrl);
 };
 
 export const getSqlFormat = (sqlStr: string) => {
@@ -64,8 +70,7 @@ export const getSqlFormat = (sqlStr: string) => {
 
   return sqlFormat(sqlStr, {
     language: 'mysql', // Defaults to "sql" (see the above list of supported dialects)
-    indent: '    ', // Defaults to two spaces
-    uppercase: true, // Defaults to false (not safe to use when SQL dialect has case-sensitive identifiers)
+    tabWidth: 2,
     linesBetweenQueries: 2, // Defaults to 1
   });
 };

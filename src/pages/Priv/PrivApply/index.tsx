@@ -1,8 +1,9 @@
-import Icon, { createFromIconfontCN } from '@ant-design/icons';
+import { createFromIconfontCN, PlusCircleOutlined } from '@ant-design/icons';
 import { Card, Col, Collapse, Drawer, Row } from 'antd';
 import React from 'react';
 import './index.less';
 import { DB_TYPE_MYSQL } from '@/utils/dbTypeSelectModel';
+import AddMySQLPrivForm from '@/pages/Priv/PrivApply/AddMySQLPrivForm';
 
 const { Panel } = Collapse;
 
@@ -35,7 +36,7 @@ const Index = () => {
             <span style={{ padding: '10px', fontSize: '14px' }}>MySQL</span>
           </Col>
           <Col span={2}>
-            <Icon type="plus-circle" style={{ fontSize: '20px' }} />
+            <PlusCircleOutlined />
           </Col>
         </Row>
       </Card>
@@ -53,9 +54,7 @@ const Index = () => {
         visible={visible}
         onClose={() => openDrawer()}
       >
-        {
-          // this.getPrivApply()
-        }
+        <AddMySQLPrivForm />
       </Drawer>
       <div>
         <Collapse defaultActiveKey={['1']} style={{ margin: '10px' }}>

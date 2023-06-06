@@ -78,6 +78,7 @@
     "react-resizable": "^3.0.4",
     "react-virtualized": "^9.22.3",
     "rsuite": "^5.30.0",
+    "sql-formatter": "^12.2.1",
     "umi": "^3.5.0"
   },
   "devDependencies": {

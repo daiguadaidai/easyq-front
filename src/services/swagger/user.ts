@@ -1,6 +1,8 @@
 // @ts-ignore
 /* eslint-disable */
 import request, { ResponseData } from '@/utils/request';
+// @ts-ignore
+import { CAPI } from '@/services/swagger/typings';
 
 /** Add a new pet to the store POST /pet */
 export async function findUser(body: any, options?: { [key: string]: any }) {

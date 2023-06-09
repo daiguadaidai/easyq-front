@@ -8,7 +8,7 @@ import AddMySQLPrivForm from '@/pages/Priv/PrivApply/AddMySQLPrivForm';
 const { Panel } = Collapse;
 
 const IconFont = createFromIconfontCN({
-  scriptUrl: './icons/db/iconfont.js',
+  scriptUrl: '/icons/db/iconfont.js',
   extraCommonProps: {},
 });
 

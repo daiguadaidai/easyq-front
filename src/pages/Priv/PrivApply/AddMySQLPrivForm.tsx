@@ -8,6 +8,7 @@ import { findDBNames } from '@/services/swagger/db_operation';
 
 import '@/pages/index.less';
 import { ClearOutlined, PlusOutlined } from '@ant-design/icons';
+import { ApplyMySQLPrivs } from '@/services/swagger/privs';
 
 const AddMySQLPrivForm = () => {
   const [metaClusters, setMetaClusters] = useState<CAPI.MetaCluster[]>();
@@ -15,6 +16,7 @@ const AddMySQLPrivForm = () => {
   const [dbNames, setDBNames] = useState<string[]>();
   const [selectDBNames, setSelectDBNames] = useState<string[]>();
   const [privs, setPrivs] = useState<any>();
+  const [applyLoading, setApplyLoading] = useState<boolean>(false);
 
   useEffect(() => {
     // 获取所有集群信息
@@ -96,8 +98,21 @@ const AddMySQLPrivForm = () => {
     setPrivs([]);
   };
 
-  const handleApplyPrivs = () => {
-    console.log('handleApplyPrivs');
+  const handleApplyPrivs = async () => {
+    if (!privs || privs.length === 0) {
+      message.error('申请到权限列表没有权限, 不允许提交');
+      return;
+    }
+    setApplyLoading(true);
+    const rs = await ApplyMySQLPrivs({ apply_reason: '', privs });
+    if (rs.success) {
+      message.success('申请成功');
+      setPrivs([]);
+      setApplyLoading(false);
+      return;
+    }
+
+    setApplyLoading(false);
   };
 
   const columns = [
@@ -209,7 +224,12 @@ const AddMySQLPrivForm = () => {
             className="custom-table"
             title={() => (
               <>
-                <Button type="primary" icon={<PlusOutlined />} onClick={handleApplyPrivs}>
+                <Button
+                  type="primary"
+                  loading={applyLoading}
+                  icon={<PlusOutlined />}
+                  onClick={handleApplyPrivs}
+                >
                   提交申请
                 </Button>
                 &nbsp;&nbsp;&nbsp;&nbsp;

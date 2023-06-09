@@ -51,5 +51,6 @@ export default {
   'menu.editor.mind': '脑图编辑器',
   'menu.editor.koni': '拓扑编辑器',
   'menu.virtable': '虚拟表',
-  'menu.priv': '权限申请',
+  'menu.priv': '权限管理',
+  'menu.priv.apply': '权限申请',
 };

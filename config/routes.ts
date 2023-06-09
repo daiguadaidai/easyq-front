@@ -23,7 +23,13 @@
     path: '/priv',
     name: 'priv',
     icon: 'team',
-    component: './Priv/PrivApply',
+    routes: [
+      {
+        name: 'apply',
+        path: '/priv/apply',
+        component: './Priv/PrivApply',
+      },
+    ],
   },
   {
     path: '/query',

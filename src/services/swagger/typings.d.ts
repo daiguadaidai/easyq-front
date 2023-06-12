@@ -58,4 +58,18 @@ declare namespace CAPI {
     updated_at: string;
     created_at: string;
   };
+
+  type MysqlPrivApply = {
+    id: number;
+    order_uuid: string;
+    user_id: number;
+    username: string;
+    name_zh: string;
+    meta_cluster_id: number;
+    cluster_name: string;
+    db_name: string;
+    vip_port: string;
+    updated_at: string;
+    created_at: string;
+  };
 }

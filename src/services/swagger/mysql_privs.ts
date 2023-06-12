@@ -21,3 +21,12 @@ export async function FindMySQLPrivOrders(body: any, options?: { [key: string]: 
     ...(options || {}),
   });
 }
+
+// 通过uuid获取所有申请权限信息
+export async function FindMySQLPrivApplysByUUID(body: any, options?: { [key: string]: any }) {
+  return request<ResponseData<any>>('/api/v1/mysql-privs/apply-mysql-priv-find-by-uuid', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+}

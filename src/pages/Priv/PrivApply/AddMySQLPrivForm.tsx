@@ -220,6 +220,7 @@ const AddMySQLPrivForm = () => {
             columns={columns}
             dataSource={privs}
             className="custom-table"
+            pagination={false}
             title={() => (
               <>
                 <Button

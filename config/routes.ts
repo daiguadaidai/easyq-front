@@ -29,6 +29,11 @@
         path: '/priv/apply',
         component: './Priv/PrivApply',
       },
+      {
+        name: 'priv-apply-order',
+        path: '/priv/priv-apply-order',
+        component: './Priv/PrivApplyOrder',
+      },
     ],
   },
   {

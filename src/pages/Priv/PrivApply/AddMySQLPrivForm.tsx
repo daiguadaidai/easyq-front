@@ -8,7 +8,7 @@ import { findDBNames } from '@/services/swagger/db_operation';
 
 import '@/pages/index.less';
 import { ClearOutlined, PlusOutlined } from '@ant-design/icons';
-import { ApplyMySQLPrivs } from '@/services/swagger/privs';
+import { ApplyMySQLPrivs } from '@/services/swagger/mysql_privs';
 
 const AddMySQLPrivForm = () => {
   const [metaClusters, setMetaClusters] = useState<CAPI.MetaCluster[]>();
@@ -169,10 +169,9 @@ const AddMySQLPrivForm = () => {
                 optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
               }
               onChange={onChangeCluster}
-              style={{ width: '100%', fontSize: 11 }}
             >
               {metaClusters?.map((cluster) => (
-                <Select.Option key={cluster.id} value={cluster.id} style={{ fontSize: 11 }}>
+                <Select.Option key={cluster.id} value={cluster.id}>
                   {getClusterNameSelectOption(
                     cluster.name,
                     cluster.vip_port,
@@ -198,10 +197,9 @@ const AddMySQLPrivForm = () => {
                 optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
               }
               onChange={(value) => setSelectDBNames(value)}
-              style={{ width: '100%', fontSize: 11 }}
             >
               {dbNames?.map((dbName) => (
-                <Select.Option key={dbName} value={dbName} style={{ fontSize: 11 }}>
+                <Select.Option key={dbName} value={dbName}>
                   {dbName}
                 </Select.Option>
               ))}

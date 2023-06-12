@@ -112,3 +112,24 @@ export enum storageType {
   Shard = 'shard',
   TIDB = 'tidb',
 }
+
+export enum applyStatus {
+  Unknow, // 未知
+  Applying, // 申请中
+  Success, // 申请成功
+  Fail, // 申请失败
+}
+
+export enum applyStatusStr {
+  Unknow = '未知',
+  Applying = '申请中',
+  Success = '申请成功',
+  Fail = '申请失败',
+}
+
+export const applyStatusMap = new Map([
+  [applyStatus.Unknow, applyStatusStr.Unknow],
+  [applyStatus.Applying, applyStatusStr.Applying],
+  [applyStatus.Success, applyStatusStr.Success],
+  [applyStatus.Fail, applyStatusStr.Fail],
+]);

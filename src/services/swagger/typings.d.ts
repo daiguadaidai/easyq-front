@@ -45,4 +45,17 @@ declare namespace CAPI {
     category: number;
     set_name: string;
   };
+
+  type MysqlDBPrivApplyOrder = {
+    id: number;
+    order_uuid: string;
+    user_id: number;
+    username: string;
+    name_zh: string;
+    apply_status: number;
+    apply_reason: string;
+    error_message: string;
+    updated_at: string;
+    created_at: string;
+  };
 }

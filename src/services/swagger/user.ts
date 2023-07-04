@@ -30,7 +30,7 @@ export async function editUserById(body: any, options?: { [key: string]: any }) 
 }
 
 // 删除集群信息
-export async function deleteUserById(id: number) {
+export async function deleteUserById(id: number | undefined) {
   return request<ResponseData<Object>>('/api/v1/user/delete-by-id', {
     method: 'POST',
     data: { id: id, is_deleted: 1 },

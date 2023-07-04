@@ -17,7 +17,7 @@
     path: '/virtable',
     name: 'virtable',
     icon: 'fileSearch',
-    component: './Test/VirTable3',
+    component: '@/pages/Test/VirTable3',
   },
   {
     path: '/priv',
@@ -25,14 +25,27 @@
     icon: 'team',
     routes: [
       {
+        path: '/priv',
+        redirect: '/priv/apply',
+      },
+      {
+        name: 'user-list',
+        icon: 'user',
+        path: '/priv/user',
+        component: '@/pages/Priv/User',
+      },
+      {
         name: 'apply',
         path: '/priv/apply',
-        component: './Priv/PrivApply',
+        component: '@/pages/Priv/PrivApply',
       },
       {
         name: 'priv-apply-order',
         path: '/priv/priv-apply-order',
-        component: './Priv/PrivApplyOrder',
+        component: '@/pages/Priv/PrivApplyOrder',
+      },
+      {
+        component: './404',
       },
     ],
   },
@@ -40,7 +53,7 @@
     path: '/query',
     name: 'query',
     icon: 'fileSearch',
-    component: './Query',
+    component: '@/pages/Query',
   },
   {
     path: '/',

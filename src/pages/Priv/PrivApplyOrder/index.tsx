@@ -1,7 +1,5 @@
 import './index.less';
 import '@/pages/index.less';
-import ProTable from '@ant-design/pro-table';
-import type { ProColumns } from '@ant-design/pro-components';
 import { useAccess } from 'umi';
 import { applyStatus } from '@/services/swagger/enum';
 import { getApplyStatusOptions, getApplyStatusTag } from '@/components/ComUtil';
@@ -10,19 +8,34 @@ import {
   Card,
   Col,
   Divider,
+  Form,
   Input,
+  message,
+  Modal,
+  Popconfirm,
   Row,
   Select,
   TablePaginationConfig,
   Tooltip,
 } from 'antd';
-import { useEffect, useState } from 'react';
-import { FindMySQLPrivApplysByUUID, FindMySQLPrivOrders } from '@/services/swagger/mysql_privs';
+import { useEffect, useRef, useState } from 'react';
+import {
+  ApplyMysqlPrivEditByUUID,
+  ApplyMysqlPrivSuccess,
+  FindMySQLPrivApplysByUUID,
+  FindMySQLPrivOrders,
+} from '@/services/swagger/mysql_privs';
 import { setPropsLocationUrl } from '@/utils/stringUtils';
 import { allUser } from '@/services/swagger/user';
 import { ClearOutlined, SearchOutlined } from '@ant-design/icons';
+import { ActionType, PageContainer, ProColumns, ProTable } from '@ant-design/pro-components';
+import { modalFormLayout, modalFormTailLayout } from '@/utils/style';
 
 const Index = (props: any) => {
+  const tableRef = useRef<ActionType>();
+  const [editStatusForm] = Form.useForm();
+  const access = useAccess();
+
   const [orders, setOrders] = useState<CAPI.MysqlDBPrivApplyOrder[]>();
   const [searchUsername, setSearchUsername] = useState<string>();
   const [searchOrderUUID, setSearchOrderUUID] = useState<string>();
@@ -31,10 +44,10 @@ const Index = (props: any) => {
   const [pageSize, setPageSize] = useState<number | undefined>(50);
   const [total, setTotal] = useState<number>();
   const [applyPrivMap, setApplyPrivMap] = useState<any>();
+  const [editOrder, setEditOrder] = useState<CAPI.MysqlDBPrivApplyOrder>();
+  const [visibleEditOrderModal, setVisibleEditOrderModal] = useState<boolean>(false);
 
   const [users, setUsers] = useState<CAPI.User[]>();
-
-  const access = useAccess();
 
   const getParams = (newCurrent?: number, newPageSize?: number) => {
     return {
@@ -112,6 +125,29 @@ const Index = (props: any) => {
     setSearchUsername(undefined);
     setSearchOrderUUID(undefined);
     setSearchApplyStatus(undefined);
+  };
+
+  const confirmApply = async (order_uuid: string) => {
+    const rs = await ApplyMysqlPrivSuccess({ order_uuid });
+    if (rs.success) {
+      message.success('审批成功!');
+      await handleSearchOrders();
+    }
+  };
+
+  // 执行编辑 Form
+  const handleEditOrderOnFinish = async (order: any) => {
+    const rs = await ApplyMysqlPrivEditByUUID({
+      ...order,
+      order_uuid: editOrder?.order_uuid,
+    });
+    if (rs?.success) {
+      message.success('修改成功');
+      setVisibleEditOrderModal(false);
+      if (tableRef.current) {
+        await handleSearchOrders();
+      }
+    }
   };
 
   // 实例字段信息
@@ -223,7 +259,9 @@ const Index = (props: any) => {
               <div
                 className="can-click"
                 onDoubleClick={() => {
-                  console.log('双击修改状态');
+                  console.log(record);
+                  setEditOrder(record);
+                  setVisibleEditOrderModal(true);
                 }}
               >
                 {ele}
@@ -249,11 +287,24 @@ const Index = (props: any) => {
       render: (_, record) => {
         const ops = [];
         if (access.canDBA) {
-          if (record.apply_status === applyStatus.Applying) {
+          if (
+            record.apply_status === applyStatus.Applying ||
+            record.apply_status === applyStatus.Fail
+          ) {
             ops.push(
-              <a key="link" className="a-option">
-                同意
-              </a>,
+              <Popconfirm
+                title="确定同意权限申请?"
+                onConfirm={() => {
+                  confirmApply(record.order_uuid);
+                }}
+                okText="确定"
+                cancelText="取消"
+                key="1"
+              >
+                <a key="link" className="a-option">
+                  同意
+                </a>
+              </Popconfirm>,
             );
           }
         }
@@ -263,7 +314,7 @@ const Index = (props: any) => {
   ];
 
   return (
-    <>
+    <PageContainer>
       <Card>
         <Row>
           <Col span={2} className="col-label">
@@ -272,12 +323,12 @@ const Index = (props: any) => {
           <Col span={4} className="col-value">
             <Select
               placeholder="请选择申请人"
-              filterOption={(input, option) =>
+              filterOption={(input: string, option: any) =>
                 // @ts-ignore
                 option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
               value={searchUsername}
-              onChange={(value) => setSearchUsername(value)}
+              onChange={(value: any) => setSearchUsername(value)}
               onClear={() => setSearchUsername(undefined)}
               showSearch
               allowClear
@@ -297,7 +348,7 @@ const Index = (props: any) => {
             <Input
               placeholder="请输入库名"
               value={searchOrderUUID}
-              onChange={(e) => setSearchOrderUUID(e.target.value)}
+              onChange={(e: any) => setSearchOrderUUID(e.target.value)}
               allowClear
             />
           </Col>
@@ -309,11 +360,11 @@ const Index = (props: any) => {
               style={{ width: '100%' }}
               placeholder="请选申请状态"
               value={searchApplyStatus}
-              filterOption={(input, option) =>
+              filterOption={(input: string, option: any) =>
                 // @ts-ignore
                 option?.children?.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
-              onChange={(value) => setSearchApplyStatus(value)}
+              onChange={(value: any) => setSearchApplyStatus(value)}
               onClear={() => {
                 setSearchApplyStatus(undefined);
               }}
@@ -323,32 +374,31 @@ const Index = (props: any) => {
               {getApplyStatusOptions()}
             </Select>
           </Col>
-        </Row>
-        <br />
-        <Row>
-          <Col span={24} className="col-right">
-            <Button
-              type="default"
-              icon={<ClearOutlined />}
-              className="gap-right"
-              onClick={handleOnClickClearSearch}
-            >
-              清空
-            </Button>
+          <Col span={6} className="col-left">
             <Button
               type="primary"
               icon={<SearchOutlined />}
+              className="gap-left"
               onClick={() => {
                 handleSearchOrders();
               }}
             >
               搜索
             </Button>
+            <Button
+              type="default"
+              icon={<ClearOutlined />}
+              className="gap-left"
+              onClick={handleOnClickClearSearch}
+            >
+              清空
+            </Button>
           </Col>
         </Row>
       </Card>
       <br />
       <ProTable<CAPI.MysqlDBPrivApplyOrder, { keyWord?: string }>
+        actionRef={tableRef}
         columns={columns}
         dataSource={orders}
         headerTitle={false}
@@ -368,7 +418,43 @@ const Index = (props: any) => {
           total,
         }}
       />
-    </>
+      <Modal
+        title={`编辑申请单(${editOrder?.order_uuid})`}
+        visible={visibleEditOrderModal}
+        footer={false}
+        onCancel={() => {
+          setEditOrder(undefined);
+          setVisibleEditOrderModal(false);
+        }}
+      >
+        <Form {...modalFormLayout} form={editStatusForm} onFinish={handleEditOrderOnFinish}>
+          <Form.Item
+            label="状态"
+            name="apply_status"
+            initialValue={editOrder?.apply_status}
+            rules={[{ required: true, message: '工单状态' }]}
+          >
+            <Select placeholder="请选择需要修改单状态" allowClear>
+              {getApplyStatusOptions()}
+            </Select>
+          </Form.Item>
+          <Form.Item {...modalFormTailLayout} style={{ textAlign: 'right' }}>
+            <Button
+              htmlType="button"
+              onClick={() => {
+                setEditOrder(undefined);
+                setVisibleEditOrderModal(false);
+              }}
+            >
+              取消
+            </Button>
+            <Button type="primary" htmlType="submit" style={{ margin: '0 0 0 8px' }}>
+              更改
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </PageContainer>
   );
 };
 

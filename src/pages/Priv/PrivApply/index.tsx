@@ -4,6 +4,7 @@ import React from 'react';
 import './index.less';
 import { DB_TYPE_MYSQL } from '@/utils/dbTypeSelectModel';
 import AddMySQLPrivForm from '@/pages/Priv/PrivApply/AddMySQLPrivForm';
+import { PageContainer } from '@ant-design/pro-components';
 
 const { Panel } = Collapse;
 
@@ -44,7 +45,7 @@ const Index = () => {
   };
 
   return (
-    <>
+    <PageContainer>
       <Drawer
         title={`${dbType} 权限(申请/添加)`}
         placement="right"
@@ -65,7 +66,7 @@ const Index = () => {
           </Panel>
         </Collapse>
       </div>
-    </>
+    </PageContainer>
   );
 };
 

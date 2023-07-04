@@ -52,7 +52,7 @@
   ],
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
-    "@ant-design/pro-components": "1.1.1",
+    "@ant-design/pro-components": "^1.1.1",
     "@codemirror/lang-sql": "0.19.4",
     "@faker-js/faker": "^7.6.0",
     "@uiw/react-codemirror": "4.3.2",

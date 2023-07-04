@@ -15,7 +15,31 @@ export async function ApplyMySQLPrivs(body: any, options?: { [key: string]: any 
 
 // 添加申请权限
 export async function FindMySQLPrivOrders(body: any, options?: { [key: string]: any }) {
-  return request<ResponseData<any>>('/api/v1/mysql-privs/apply-mysql-priv-order', {
+  return request<ResponseData<CAPI.ResponseList<CAPI.MysqlDBPrivApplyOrder>>>(
+    '/api/v1/mysql-privs/apply-mysql-priv-order',
+    {
+      method: 'POST',
+      data: body,
+      ...(options || {}),
+    },
+  );
+}
+
+// 通过uuid获取所有申请权限信息
+export async function FindMySQLPrivApplysByUUID(body: any, options?: { [key: string]: any }) {
+  return request<ResponseData<CAPI.ResponseList<CAPI.MysqlPrivApply>>>(
+    '/api/v1/mysql-privs/apply-mysql-priv-find-by-uuid',
+    {
+      method: 'POST',
+      data: body,
+      ...(options || {}),
+    },
+  );
+}
+
+// 通过uuid获取所有申请权限信息
+export async function ApplyMysqlPrivSuccess(body: any, options?: { [key: string]: any }) {
+  return request<ResponseData<any>>('/api/v1/mysql-privs/apply-mysql-priv-success', {
     method: 'POST',
     data: body,
     ...(options || {}),
@@ -23,8 +47,8 @@ export async function FindMySQLPrivOrders(body: any, options?: { [key: string]: 
 }
 
 // 通过uuid获取所有申请权限信息
-export async function FindMySQLPrivApplysByUUID(body: any, options?: { [key: string]: any }) {
-  return request<ResponseData<any>>('/api/v1/mysql-privs/apply-mysql-priv-find-by-uuid', {
+export async function ApplyMysqlPrivEditByUUID(body: any, options?: { [key: string]: any }) {
+  return request<ResponseData<any>>('/api/v1/mysql-privs/apply-mysql-priv-edit-by-uuid', {
     method: 'POST',
     data: body,
     ...(options || {}),

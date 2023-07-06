@@ -1,5 +1,6 @@
 import { applyStatus, applyStatusMap } from '@/services/swagger/enum';
 import { Select, Tag } from 'antd';
+import { DatabaseOutlined } from '@ant-design/icons';
 
 export function getApplyStatusTag(status: number) {
   let color = '';
@@ -29,4 +30,26 @@ export function getApplyStatusOptions() {
     ),
   );
   return eles;
+}
+
+export function MysqlPrivTreesToTreeNodes2(privs: CAPI.MysqlPrivTree[]) {
+  const trees = [];
+  const len = privs.length;
+  for (let i = 0; i < len; i++) {
+    const dataNode = {
+      label: (
+        <>
+          <DatabaseOutlined />
+          &nbsp;&nbsp;
+          {`${privs[i].db_name}(${privs[i].vip_port})[${privs[i].cluster_name}]`}
+        </>
+      ),
+      data: { type: 'db', ...privs[i] },
+      value: privs[i].id,
+      children: [],
+    };
+    trees.push(dataNode);
+  }
+
+  return trees;
 }

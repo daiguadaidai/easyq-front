@@ -72,4 +72,12 @@ declare namespace CAPI {
     updated_at: string;
     created_at: string;
   };
+
+  type MysqlPrivTree = {
+    id: number;
+    meta_cluster_id: number;
+    cluster_name: string;
+    db_name: string;
+    vip_port: string;
+  };
 }

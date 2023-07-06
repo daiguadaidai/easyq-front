@@ -54,3 +54,15 @@ export async function ApplyMysqlPrivEditByUUID(body: any, options?: { [key: stri
     ...(options || {}),
   });
 }
+
+// 通过uuid获取所有申请权限信息
+export async function FindPrivTreesByUsername(body: any, options?: { [key: string]: any }) {
+  return request<ResponseData<CAPI.ResponseList<CAPI.MysqlPrivTree>>>(
+    '/api/v1/mysql-privs/find-privs-tree-by-username',
+    {
+      method: 'POST',
+      data: body,
+      ...(options || {}),
+    },
+  );
+}

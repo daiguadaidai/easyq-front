@@ -7,6 +7,8 @@ import 'react-virtualized/styles.css';
 import './index.less';
 import { Empty } from 'antd';
 
+const Draggable1: any = Draggable;
+
 type StateType = {
   rsState: VirTableState;
   columns: Column[];
@@ -186,7 +188,7 @@ class ResultTable extends React.PureComponent {
         <span className="virtualized-span-cell" style={{ width: width - 12 }} title={name}>
           {name}
         </span>
-        <Draggable
+        <Draggable1
           /**
            * 从当前selection对象中移除所有的range对象,取消所有的选择只 留下anchorNode 和focusNode属性并将其设置为null。
            * 会引发codemirror如果使用快捷键执行代码后无法继续输入
@@ -196,7 +198,7 @@ class ResultTable extends React.PureComponent {
           grid={[25, 0]}
           defaultClassName="virtualized-DragHandle"
           defaultClassNameDragging="virtualized-DragHandleActive"
-          onDrag={(event, { deltaX }) =>
+          onDrag={(event: any, { deltaX }: any) =>
             this.resizeRow({
               columnIndex,
               deltaX,
@@ -205,7 +207,7 @@ class ResultTable extends React.PureComponent {
           position={{ x: 0, y: 0 }}
         >
           <span className="virtualized-DragHandleIcon">⋮</span>
-        </Draggable>
+        </Draggable1>
       </div>
     );
   };
@@ -249,7 +251,7 @@ class ResultTable extends React.PureComponent {
     return (
       <>
         <ScrollSync>
-          {({ onScroll, scrollLeft, scrollTop }) => {
+          {({ onScroll, scrollLeft, scrollTop }: any) => {
             return (
               <div className="virtualized-GridRow">
                 <div

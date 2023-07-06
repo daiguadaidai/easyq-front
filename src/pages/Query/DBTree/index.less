@@ -1,16 +1,15 @@
-.db-tree-content {
-  height: 100%;
-  padding: 4px;
-}
+.rs-tree.rs-tree-db-tree-data {
+  max-height: 100% !important;
+  white-space: nowrap !important;
 
-.db-tree-search-input {
-  margin-bottom: 4px !important;
+  & > .rs-tree-nodes > .rs-tree-node-children {
+    & > div {
+      padding-left: 4px !important;
+    }
 
-  & > .ant-input-sm {
-    font-size: 10px !important;
+    & > .rs-tree-node > .rs-tree-node-label > .rs-tree-node-label-content {
+      font-size: 10px !important;
+      padding: 4px 12px 6px 2px !important;
+    }
   }
-}
-
-.db-tree-data {
-  font-size: 10px !important;
 }

@@ -3,10 +3,10 @@ import { Tree } from 'rsuite';
 import './index.less';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FindPrivTreesByUsername } from '@/services/swagger/mysql_privs';
+import { FindPrivTreesByUsername, FindTableNamesByUser } from '@/services/swagger/mysql_privs';
 import { getUser } from '@/utils/storage';
-import { MysqlPrivTreesToTreeNodes2 } from '@/components/ComUtil';
-import { Col, Input, Row } from 'antd';
+import { GetTableNodes, MysqlPrivTreesToTreeNodes2 } from '@/components/ComUtil';
+import { Col, Input, message, Row } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
 class DBTree extends React.PureComponent<any, any> {
@@ -80,10 +80,67 @@ class DBTree extends React.PureComponent<any, any> {
     this.setState({ searchKey, searchTrees });
   };
 
-  handleOnExpand = (a: any, b: any, c: any) => {
-    console.log('a: ', a);
-    console.log('b: ', b);
-    console.log('c: ', c);
+  handleOnExpand = async (expandItemValues: any[], item: any) => {
+    if (item.expand) {
+      // 关闭树
+      return;
+    }
+
+    // 展开树操作
+    // 获取展开节点树
+    const expandValue = expandItemValues[expandItemValues.length - 1];
+    let expandPrivTree: any = {};
+    const privTreesLeng = this.state.privTrees.length;
+    let privIndex = -1;
+    for (let i = 0; i < privTreesLeng; i++) {
+      if (this.state.privTrees[i].value === expandValue) {
+        privIndex = i;
+        expandPrivTree = {
+          ...this.state.privTrees[i],
+        };
+        break;
+      }
+    }
+    if (privIndex === -1) {
+      message.error('没有获取到展开库相关信息, 展开库 index = -1');
+    }
+
+    // 判断子节点是否为空, 已经有表信息则直接返回
+    if (expandPrivTree.children.length > 0) {
+      return;
+    }
+
+    // 没有表信息则创建, 获取表信息
+    const rs = await FindTableNamesByUser({
+      meta_cluster_id: expandPrivTree.data.meta_cluster_id,
+      db_name: expandPrivTree.data.db_name,
+    });
+    if (!rs.success) {
+      // 查询失败
+      return;
+    }
+    if (rs.data.total === 0) {
+      message.error(`${expandPrivTree.data.db_name} 该库中没有表`);
+    }
+
+    // 查询成功
+    const tableNames = rs.data.list;
+    const tableNodes = GetTableNodes(expandPrivTree, tableNames);
+    expandPrivTree.children = [...tableNodes];
+    const privTrees = [...this.state.privTrees];
+    privTrees[privIndex] = expandPrivTree;
+
+    // 生成新的 searchTrees
+    const searchTrees = [...this.state.searchTrees];
+    const searchTreesLeng = searchTrees.length;
+    for (let i = 0; i < searchTreesLeng; i++) {
+      if (this.state.searchTrees[i].value === expandValue) {
+        searchTrees[i].children = [...tableNodes];
+        break;
+      }
+    }
+
+    this.setState({ privTrees, searchTrees });
   };
 
   render() {
@@ -109,7 +166,7 @@ class DBTree extends React.PureComponent<any, any> {
               className="db-tree-data"
               data={this.state.searchTrees}
               height={this.getHeight()}
-              onExpand={this.handleOnExpand}
+              onExpand={(expandItemValues, item) => this.handleOnExpand(expandItemValues, item)}
               defaultExpandAll
             />
           </Col>

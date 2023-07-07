@@ -1,6 +1,6 @@
 import { applyStatus, applyStatusMap } from '@/services/swagger/enum';
 import { Select, Tag } from 'antd';
-import { DatabaseOutlined } from '@ant-design/icons';
+import { DatabaseOutlined, TableOutlined } from '@ant-design/icons';
 
 export function getApplyStatusTag(status: number) {
   let color = '';
@@ -45,11 +45,34 @@ export function MysqlPrivTreesToTreeNodes2(privs: CAPI.MysqlPrivTree[]) {
         </>
       ),
       data: { type: 'db', ...privs[i] },
-      value: privs[i].id,
+      value: `${privs[i].id}`,
       children: [],
     };
     trees.push(dataNode);
   }
 
   return trees;
+}
+
+export function GetTableNode(privData: any, tableName: string) {
+  return {
+    label: (
+      <>
+        <TableOutlined />
+        &nbsp;&nbsp;
+        {tableName}
+      </>
+    ),
+    data: {
+      type: 'table',
+      tableName,
+      dbName: privData.db_name,
+      metaClusterId: privData.meta_cluster_id,
+    },
+    value: tableName,
+  };
+}
+
+export function GetTableNodes(privData: any, tableNames: string[]) {
+  return tableNames.map((value) => GetTableNode(privData, value));
 }

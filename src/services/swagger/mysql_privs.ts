@@ -66,3 +66,14 @@ export async function FindPrivTreesByUsername(body: any, options?: { [key: strin
     },
   );
 }
+
+export async function FindTableNamesByUser(body: any, options?: { [key: string]: any }) {
+  return request<ResponseData<CAPI.ResponseList<string[]>>>(
+    '/api/v1/mysql-privs/find-tables-by-user',
+    {
+      method: 'POST',
+      data: body,
+      ...(options || {}),
+    },
+  );
+}

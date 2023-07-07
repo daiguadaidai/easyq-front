@@ -6,6 +6,8 @@ import PropTypes from 'prop-types';
 import { FindPrivTreesByUsername } from '@/services/swagger/mysql_privs';
 import { getUser } from '@/utils/storage';
 import { MysqlPrivTreesToTreeNodes2 } from '@/components/ComUtil';
+import { Col, Input, Row } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 
 class DBTree extends React.PureComponent<any, any> {
   static propTypes = {
@@ -23,12 +25,13 @@ class DBTree extends React.PureComponent<any, any> {
       searchKey: '',
     };
 
-    this.getDBTreeDataHeight = this.getDBTreeDataHeight.bind(this);
+    this.getHeight = this.getHeight.bind(this);
+    this.getWidth = this.getWidth.bind(this);
+    this.handleOnExpand = this.handleOnExpand.bind(this);
+    this.searchDB = this.searchDB.bind(this);
   }
 
   componentDidMount = async () => {
-    this.props.onRef(this);
-
     const user = getUser();
 
     const privs = await FindPrivTreesByUsername({ username: user.username });
@@ -39,22 +42,23 @@ class DBTree extends React.PureComponent<any, any> {
     }
   };
 
-  getDBTreeDataHeight = () => {
+  getWidth = () => {
+    const { width } = this.props.dimensions;
+    if (typeof width !== 'number') {
+      return 0;
+    }
+
+    return width - 10;
+  };
+
+  getHeight = () => {
     const { height } = this.props.dimensions;
 
     if (typeof height !== 'number') {
-      return 300;
+      return 0;
     }
 
-    return height;
-  };
-
-  setSearchKey = (searchKey: string) => {
-    if (this.state.searchKey === searchKey) {
-      return;
-    }
-
-    this.setState({ searchKey });
+    return height - 35;
   };
 
   searchDB = (searchKey: string) => {
@@ -76,14 +80,41 @@ class DBTree extends React.PureComponent<any, any> {
     this.setState({ searchKey, searchTrees });
   };
 
+  handleOnExpand = (a: any, b: any, c: any) => {
+    console.log('a: ', a);
+    console.log('b: ', b);
+    console.log('c: ', c);
+  };
+
   render() {
     return (
-      <Tree
-        className="db-tree-data"
-        data={this.state.searchTrees}
-        height={this.getDBTreeDataHeight()}
-        defaultExpandAll
-      />
+      <>
+        <Row>
+          <Col span={24}>
+            <Input
+              placeholder="数据库搜索"
+              size="small"
+              suffix={<SearchOutlined />}
+              className="db-tree-search-input"
+              style={{ width: this.getWidth() }}
+              onChange={(e) => {
+                this.searchDB(e.target.value);
+              }}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col span={24}>
+            <Tree
+              className="db-tree-data"
+              data={this.state.searchTrees}
+              height={this.getHeight()}
+              onExpand={this.handleOnExpand}
+              defaultExpandAll
+            />
+          </Col>
+        </Row>
+      </>
     );
   }
 }

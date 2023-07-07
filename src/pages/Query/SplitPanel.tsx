@@ -6,7 +6,6 @@ const ReflexElement1: any = ReflexElement;
 import DBTree from '@/pages/Query/DBTree';
 import DBQuery from '@/pages/Query/DBQuery';
 import DBResult from '@/pages/Query/DBResult';
-import DBTreeSearch from '@/pages/Query/DBTreeSearch';
 
 import 'react-reflex/styles.css';
 import './split-panel.less';
@@ -14,7 +13,6 @@ import PropTypes from 'prop-types';
 
 class SplitPanel extends PureComponent<any, any> {
   private dbResultRef: any;
-  private dbTreeRef: any;
 
   static propTypes = {
     tabPaneKey: PropTypes.string,
@@ -32,9 +30,7 @@ class SplitPanel extends PureComponent<any, any> {
     this.state = {};
 
     this.onRefDBResult = this.onRefDBResult.bind(this);
-    this.onRefDBTree = this.onRefDBTree.bind(this);
     this.dbResultQueryGetResult = this.dbResultQueryGetResult.bind(this);
-    this.dbTreeSetSearchKey = this.dbTreeSetSearchKey.bind(this);
   }
 
   onRefDBResult = (ref: any) => {
@@ -45,39 +41,14 @@ class SplitPanel extends PureComponent<any, any> {
     this.dbResultRef.queryGetResult();
   };
 
-  onRefDBTree = (ref: any) => {
-    this.dbTreeRef = ref;
-  };
-
-  dbTreeSetSearchKey = (searchKey: string) => {
-    this.dbTreeRef.setSearchKey(searchKey);
-  };
-
-  dbTreeSearchDB = (searchKey: string) => {
-    this.dbTreeRef.searchDB(searchKey);
-  };
-
   render() {
     return (
       <>
         <ReflexContainer1 orientation="vertical" className="split-panel-content">
           <ReflexElement1 flex={0.18} className="left-pane">
             <ReflexContainer1 orientation="horizontal">
-              <ReflexElement1 flex={0} minSize="35" propagateDimensions>
-                <DBTreeSearch
-                  tabPaneKey={this.props.tabPaneKey}
-                  dbTreeSearchData={this.props.dbTreeSearchData}
-                  dbTreeSetSearchKey={this.dbTreeSetSearchKey}
-                  dbTreeSearchDB={this.dbTreeSearchDB}
-                />
-              </ReflexElement1>
-
               <ReflexElement1 propagateDimensionsRate={10} propagateDimensions>
-                <DBTree
-                  onRef={this.onRefDBTree}
-                  tabPaneKey={this.props.tabPaneKey}
-                  dbTreeData={this.props.dbTreeData}
-                />
+                <DBTree tabPaneKey={this.props.tabPaneKey} dbTreeData={this.props.dbTreeData} />
               </ReflexElement1>
             </ReflexContainer1>
           </ReflexElement1>

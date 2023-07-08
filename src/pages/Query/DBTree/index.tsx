@@ -18,11 +18,16 @@ class DBTree extends React.PureComponent<any, any> {
   constructor(props: any) {
     super(props);
 
+    /*
     this.state = {
       privs: [],
       privTrees: [],
       searchTrees: [],
       searchKey: '',
+    }
+     */
+    this.state = {
+      ...props.dbTreeData,
     };
 
     this.getHeight = this.getHeight.bind(this);

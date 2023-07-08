@@ -18,7 +18,6 @@ class SplitPanel extends PureComponent<any, any> {
     tabPaneKey: PropTypes.string,
     dbQueryData: PropTypes.any,
     dbTreeData: PropTypes.any,
-    dbTreeSearchData: PropTypes.any,
     dbResultData: PropTypes.any,
     setDBResultData: PropTypes.func,
     cleanDataAndLocalStore: PropTypes.func,

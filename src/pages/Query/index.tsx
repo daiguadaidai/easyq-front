@@ -14,7 +14,12 @@ const { TabPane } = Tabs;
 const defaultqueryTabPane = {
   key: '1',
   dbQueryData: {},
-  dbTreeData: {},
+  dbTreeData: {
+    privs: [],
+    privTrees: [],
+    searchTrees: [],
+    searchKey: '',
+  },
   dbResultData: {
     resultActiveKey: '1',
     resultMaxKey: 1,

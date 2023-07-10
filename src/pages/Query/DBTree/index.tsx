@@ -28,22 +28,35 @@ class DBTree extends React.PureComponent<any, any> {
      */
     this.state = {
       ...props.dbTreeData,
+      privTrees: [],
+      searchTrees: [],
     };
 
     this.getHeight = this.getHeight.bind(this);
     this.getWidth = this.getWidth.bind(this);
     this.handleOnExpand = this.handleOnExpand.bind(this);
     this.searchDB = this.searchDB.bind(this);
+    this.filterSearchPrivs = this.filterSearchPrivs.bind(this);
   }
 
   componentDidMount = async () => {
-    const user = getUser();
+    this.props.onRef(this);
 
-    const privs = await FindPrivTreesByUsername({ username: user.username });
-    if (privs.success) {
-      const privTrees = MysqlPrivTreesToTreeNodes2(privs.data.list);
-      const searchTrees = [...privTrees];
-      this.setState({ privs, privTrees, searchTrees });
+    if (this.props?.dbTreeData?.privs && this.props.dbTreeData.privs.length > 0) {
+      // 有缓存数据则使用缓存
+      const privTrees = MysqlPrivTreesToTreeNodes2(this.props.dbTreeData.privs);
+      const searchTrees = this.filterSearchPrivs(this.props.dbTreeData.searchKey, privTrees, true);
+      this.setState({ privTrees, searchTrees });
+    } else {
+      // 没有缓存则新建
+      const user = getUser();
+
+      const privs = await FindPrivTreesByUsername({ username: user.username });
+      if (privs.success) {
+        const privTrees = MysqlPrivTreesToTreeNodes2(privs.data.list);
+        const searchTrees = [...privTrees];
+        this.setState({ privs: privs.data.list, privTrees, searchTrees });
+      }
     }
   };
 
@@ -66,23 +79,34 @@ class DBTree extends React.PureComponent<any, any> {
     return height - 35;
   };
 
-  searchDB = (searchKey: string) => {
+  filterSearchPrivs = (
+    searchKey: string,
+    privTrees: any[],
+    isComponentDidMount: boolean = false,
+  ) => {
     let searchTrees: any[] = [];
     if (searchKey === '' && searchKey !== this.state.searchKey) {
       // 搜索key为空字符串, 并且原先key信息已经存在
-      searchTrees = [...this.state.privTrees];
-    } else if (searchKey === this.state.searchKey) {
-      // key一样
+      searchTrees = [...privTrees];
+    } else if (searchKey === this.state.searchKey && !isComponentDidMount) {
+      // key一样, 并且不是组件创建的时候
       return;
     } else {
       const lowerCaseSearchKey = searchKey.toLowerCase();
-      searchTrees = this.state.privTrees.filter((privTree: any) => {
+      searchTrees = privTrees.filter((privTree: any) => {
         const label = `${privTree.data.db_name}(${privTree.data.vip_port})[${privTree.data.cluster_name}]`;
         return label.toLowerCase().indexOf(lowerCaseSearchKey) >= 0;
       });
     }
 
-    this.setState({ searchKey, searchTrees });
+    return searchTrees;
+  };
+
+  searchDB = (searchKey: string) => {
+    const searchTrees = this.filterSearchPrivs(searchKey, this.state.privTrees);
+    if (searchTrees) {
+      this.setState({ searchKey, searchTrees });
+    }
   };
 
   handleOnExpand = async (expandItemValues: any[], item: any) => {
@@ -159,6 +183,7 @@ class DBTree extends React.PureComponent<any, any> {
               suffix={<SearchOutlined />}
               className="db-tree-search-input"
               style={{ width: this.getWidth() }}
+              value={this.state.searchKey}
               onChange={(e) => {
                 this.searchDB(e.target.value);
               }}

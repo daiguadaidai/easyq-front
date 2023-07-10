@@ -16,8 +16,6 @@ const defaultqueryTabPane = {
   dbQueryData: {},
   dbTreeData: {
     privs: [],
-    privTrees: [],
-    searchTrees: [],
     searchKey: '',
   },
   dbResultData: {
@@ -52,6 +50,8 @@ const defaultState = {
 };
 
 class Index extends PureComponent<any, any> {
+  private currPaneRef: any;
+
   constructor(props: any) {
     super(props);
 
@@ -64,10 +64,12 @@ class Index extends PureComponent<any, any> {
     this.addTabPane = this.addTabPane.bind(this);
     this.removeTabPane = this.removeTabPane.bind(this);
     this.getSplitPanelCom = this.getSplitPanelCom.bind(this);
-    this.setDBResultData = this.setDBResultData.bind(this);
     this.getStateFromLocalStore = this.getStateFromLocalStore.bind(this);
-    this.getStateRemoveResultData = this.getStateRemoveResultData.bind(this);
+    this.removeResultData = this.removeResultData.bind(this);
     this.cleanDataAndLocalStore = this.cleanDataAndLocalStore.bind(this);
+    this.setPaneData = this.setPaneData.bind(this);
+    this.onRefCurrPane = this.onRefCurrPane.bind(this);
+    this.getNewPanes = this.getNewPanes.bind(this);
   }
 
   componentDidMount() {
@@ -76,14 +78,21 @@ class Index extends PureComponent<any, any> {
   }
 
   componentWillUnmount() {
-    // 获取没有结果集的 sate
-    const state = this.getStateRemoveResultData();
-    storeQueryData(state);
+    const paneData = this.currPaneRef.getChildState();
+    if (paneData) {
+      const panes = this.getNewPanes(this.state.queryTabPaneActiveKey, paneData);
+      const state = this.removeResultData({ ...this.state, queryTabPanes: panes });
+      storeQueryData(state);
+    }
   }
 
-  getStateRemoveResultData = () => {
+  onRefCurrPane = (ref: any) => {
+    this.currPaneRef = ref;
+  };
+
+  removeResultData = (stateParam: any) => {
     const state = {
-      ...this.state,
+      ...stateParam,
     };
 
     const len = state.queryTabPanes.length;
@@ -197,17 +206,18 @@ class Index extends PureComponent<any, any> {
 
     return (
       <SplitPanel
+        onRef={this.onRefCurrPane}
         tabPaneKey={pane.key}
         dbQueryData={pane.dbQueryData}
         dbTreeData={pane.dbTreeData}
         dbResultData={pane.dbResultData}
-        setDBResultData={this.setDBResultData}
         cleanDataAndLocalStore={this.cleanDataAndLocalStore}
+        setPaneData={this.setPaneData}
       />
     );
   };
 
-  setDBResultData = (key: string, values: any) => {
+  getNewPanes = (key: string, paneData: any) => {
     const len = this.state.queryTabPanes.length;
     let tabPaneIndex = -1;
     let newTabPane = {};
@@ -216,7 +226,7 @@ class Index extends PureComponent<any, any> {
         tabPaneIndex = i;
         newTabPane = {
           ...this.state.queryTabPanes[i],
-          dbResultData: { ...values },
+          ...paneData,
         };
         break;
       }
@@ -230,7 +240,12 @@ class Index extends PureComponent<any, any> {
     const newQueryTabPanes = [...this.state.queryTabPanes];
     newQueryTabPanes[tabPaneIndex] = newTabPane;
 
-    this.setState({ queryTabPanes: newQueryTabPanes });
+    return newQueryTabPanes;
+  };
+
+  setPaneData = (key: string, paneData: any) => {
+    const panes = this.getNewPanes(key, paneData);
+    this.setState({ queryTabPanes: panes });
   };
 
   render() {

@@ -39,7 +39,6 @@ class DBResult extends React.PureComponent<any, any> {
   static propTypes = {
     tabPaneKey: PropTypes.string,
     dbResultData: PropTypes.any,
-    setDBResultData: PropTypes.func,
   };
 
   constructor(props: any) {
@@ -64,10 +63,6 @@ class DBResult extends React.PureComponent<any, any> {
   componentDidMount = () => {
     this.props.onRef(this);
   };
-
-  componentWillUnmount() {
-    this.props.setDBResultData(this.props.tabPaneKey, this.state);
-  }
 
   onChangeTabs = (targetKey: any) => {
     this.setState({ resultActiveKey: targetKey });

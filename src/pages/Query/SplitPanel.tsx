@@ -13,14 +13,15 @@ import PropTypes from 'prop-types';
 
 class SplitPanel extends PureComponent<any, any> {
   private dbResultRef: any;
+  private dbTreeRef: any;
 
   static propTypes = {
     tabPaneKey: PropTypes.string,
     dbQueryData: PropTypes.any,
     dbTreeData: PropTypes.any,
     dbResultData: PropTypes.any,
-    setDBResultData: PropTypes.func,
     cleanDataAndLocalStore: PropTypes.func,
+    setPaneData: PropTypes.func,
   };
 
   constructor(props: any) {
@@ -30,6 +31,19 @@ class SplitPanel extends PureComponent<any, any> {
 
     this.onRefDBResult = this.onRefDBResult.bind(this);
     this.dbResultQueryGetResult = this.dbResultQueryGetResult.bind(this);
+    this.onRefDBTree = this.onRefDBTree.bind(this);
+    this.getChildState = this.getChildState.bind(this);
+  }
+
+  componentDidMount = () => {
+    this.props.onRef(this);
+  };
+
+  componentWillUnmount() {
+    const paneData = this.getChildState();
+    if (paneData) {
+      this.props.setPaneData(this.props.tabPaneKey, paneData);
+    }
   }
 
   onRefDBResult = (ref: any) => {
@@ -40,6 +54,30 @@ class SplitPanel extends PureComponent<any, any> {
     this.dbResultRef.queryGetResult();
   };
 
+  onRefDBTree = (ref: any) => {
+    this.dbTreeRef = ref;
+  };
+
+  getChildState = () => {
+    if (!this.dbResultRef || !this.dbTreeRef) {
+      return;
+    }
+
+    const dbTreeData = {
+      privs: this.dbTreeRef.state.privs,
+      searchKey: this.dbTreeRef.state.searchKey,
+    };
+
+    const dbResultData = {
+      ...this.dbResultRef.state,
+    };
+
+    return {
+      dbTreeData,
+      dbResultData,
+    };
+  };
+
   render() {
     return (
       <>
@@ -47,7 +85,11 @@ class SplitPanel extends PureComponent<any, any> {
           <ReflexElement1 flex={0.18} className="left-pane">
             <ReflexContainer1 orientation="horizontal">
               <ReflexElement1 propagateDimensionsRate={10} propagateDimensions>
-                <DBTree tabPaneKey={this.props.tabPaneKey} dbTreeData={this.props.dbTreeData} />
+                <DBTree
+                  onRef={this.onRefDBTree}
+                  tabPaneKey={this.props.tabPaneKey}
+                  dbTreeData={this.props.dbTreeData}
+                />
               </ReflexElement1>
             </ReflexContainer1>
           </ReflexElement1>
@@ -73,7 +115,6 @@ class SplitPanel extends PureComponent<any, any> {
                   onRef={this.onRefDBResult}
                   tabPaneKey={this.props.tabPaneKey}
                   dbResultData={this.props.dbResultData}
-                  setDBResultData={this.props.setDBResultData}
                 />
               </ReflexElement1>
             </ReflexContainer1>

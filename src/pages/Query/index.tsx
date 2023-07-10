@@ -1,5 +1,5 @@
 import { Card, message, Tabs } from 'antd';
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import './index.less';
 import SplitPanel from '@/pages/Query/SplitPanel';
 import QueryPanalTab from '@/pages/Query/components/QueryPanalTab';
@@ -17,6 +17,7 @@ const defaultqueryTabPane = {
   dbTreeData: {
     privs: [],
     searchKey: '',
+    selectedNodeData: {},
   },
   dbResultData: {
     resultActiveKey: '1',
@@ -49,7 +50,7 @@ const defaultState = {
   ],
 };
 
-class Index extends PureComponent<any, any> {
+class Index extends Component<any, any> {
   private currPaneRef: any;
 
   constructor(props: any) {
@@ -84,6 +85,10 @@ class Index extends PureComponent<any, any> {
       const state = this.removeResultData({ ...this.state, queryTabPanes: panes });
       storeQueryData(state);
     }
+  }
+
+  shouldComponentUpdate(nextProps: Readonly<any>, nextState: Readonly<any>): boolean {
+    return !!nextState?.queryTabPanes;
   }
 
   onRefCurrPane = (ref: any) => {
@@ -128,7 +133,8 @@ class Index extends PureComponent<any, any> {
   };
 
   cleanDataAndLocalStore = () => {
-    this.setState({ ...defaultState });
+    const state = { ...defaultState };
+    this.setState({ ...state });
     cleanQueryDataToLocalStore();
   };
 

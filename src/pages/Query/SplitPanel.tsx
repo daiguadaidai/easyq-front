@@ -66,6 +66,7 @@ class SplitPanel extends PureComponent<any, any> {
     const dbTreeData = {
       privs: this.dbTreeRef.state.privs,
       searchKey: this.dbTreeRef.state.searchKey,
+      selectedNodeData: this.dbTreeRef.state.selectedNodeData,
     };
 
     const dbResultData = {

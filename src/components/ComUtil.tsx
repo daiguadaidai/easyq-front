@@ -64,10 +64,9 @@ export function GetTableNode(privData: any, tableName: string) {
       </>
     ),
     data: {
+      ...privData.data,
       type: 'table',
-      tableName,
-      dbName: privData.db_name,
-      metaClusterId: privData.meta_cluster_id,
+      table_name: tableName,
     },
     value: tableName,
   };

@@ -24,6 +24,7 @@ class DBTree extends React.PureComponent<any, any> {
       privTrees: [],
       searchTrees: [],
       searchKey: '',
+      selectedNodeData: {},
     }
      */
     this.state = {
@@ -37,6 +38,7 @@ class DBTree extends React.PureComponent<any, any> {
     this.handleOnExpand = this.handleOnExpand.bind(this);
     this.searchDB = this.searchDB.bind(this);
     this.filterSearchPrivs = this.filterSearchPrivs.bind(this);
+    this.handleOnSelect = this.handleOnSelect.bind(this);
   }
 
   componentDidMount = async () => {
@@ -172,6 +174,15 @@ class DBTree extends React.PureComponent<any, any> {
     this.setState({ privTrees, searchTrees });
   };
 
+  handleOnSelect = (item: any) => {
+    // 同一个权限则不设置nodedata
+    if (item.data.id === this.state?.selectedNodeData?.id) {
+      return;
+    }
+
+    this.setState({ selectedNodeData: item.data });
+  };
+
   render() {
     return (
       <>
@@ -195,8 +206,10 @@ class DBTree extends React.PureComponent<any, any> {
             <Tree
               className="db-tree-data"
               data={this.state.searchTrees}
+              defaultValue={`${this.state?.selectedNodeData?.id}`}
               height={this.getHeight()}
               onExpand={(expandItemValues, item) => this.handleOnExpand(expandItemValues, item)}
+              onSelect={(item) => this.handleOnSelect(item)}
               defaultExpandAll
             />
           </Col>

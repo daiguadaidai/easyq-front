@@ -13,7 +13,9 @@ const { TabPane } = Tabs;
 
 const defaultqueryTabPane = {
   key: '1',
-  dbQueryData: {},
+  dbQueryData: {
+    codeMirrorText: '',
+  },
   dbTreeData: {
     privs: [],
     searchKey: '',

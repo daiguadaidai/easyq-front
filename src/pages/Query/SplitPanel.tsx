@@ -70,7 +70,7 @@ class SplitPanel extends PureComponent<any, any> {
   };
 
   getChildState = () => {
-    if (!this.dbResultRef || !this.dbTreeRef) {
+    if (!this.dbResultRef || !this.dbTreeRef || !this.dbQueryRef) {
       return;
     }
 
@@ -84,9 +84,14 @@ class SplitPanel extends PureComponent<any, any> {
       ...this.dbResultRef.state,
     };
 
+    const dbQueryData = {
+      ...this.dbQueryRef.state.codeMirrorText,
+    };
+
     return {
       dbTreeData,
       dbResultData,
+      dbQueryData,
     };
   };
 

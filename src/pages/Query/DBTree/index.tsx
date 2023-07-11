@@ -13,6 +13,7 @@ class DBTree extends React.PureComponent<any, any> {
   static propTypes = {
     tabPaneKey: PropTypes.string,
     dbTreeData: PropTypes.any,
+    dbQuerySetState: PropTypes.func,
   };
 
   constructor(props: any) {
@@ -181,6 +182,7 @@ class DBTree extends React.PureComponent<any, any> {
     }
 
     this.setState({ selectedNodeData: item.data });
+    this.props.dbQuerySetState({ selectedTreeData: item.data });
   };
 
   render() {

@@ -107,6 +107,7 @@ class Index extends Component<any, any> {
         resultMaxKey: 1,
         resultTabs: [],
       };
+      state.queryTabPanes[i].dbTreeData.privs = [];
     }
 
     return state;

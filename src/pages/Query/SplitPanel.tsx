@@ -14,6 +14,7 @@ import PropTypes from 'prop-types';
 class SplitPanel extends PureComponent<any, any> {
   private dbResultRef: any;
   private dbTreeRef: any;
+  private dbQueryRef: any;
 
   static propTypes = {
     tabPaneKey: PropTypes.string,
@@ -33,6 +34,8 @@ class SplitPanel extends PureComponent<any, any> {
     this.dbResultQueryGetResult = this.dbResultQueryGetResult.bind(this);
     this.onRefDBTree = this.onRefDBTree.bind(this);
     this.getChildState = this.getChildState.bind(this);
+    this.onRefDBQuery = this.onRefDBQuery.bind(this);
+    this.dbQuerySetState = this.dbQuerySetState.bind(this);
   }
 
   componentDidMount = () => {
@@ -56,6 +59,14 @@ class SplitPanel extends PureComponent<any, any> {
 
   onRefDBTree = (ref: any) => {
     this.dbTreeRef = ref;
+  };
+
+  onRefDBQuery = (ref: any) => {
+    this.dbQueryRef = ref;
+  };
+
+  dbQuerySetState = (state: any) => {
+    this.dbQueryRef.setStateWithOther(state);
   };
 
   getChildState = () => {
@@ -90,6 +101,7 @@ class SplitPanel extends PureComponent<any, any> {
                   onRef={this.onRefDBTree}
                   tabPaneKey={this.props.tabPaneKey}
                   dbTreeData={this.props.dbTreeData}
+                  dbQuerySetState={this.dbQuerySetState}
                 />
               </ReflexElement1>
             </ReflexContainer1>
@@ -101,10 +113,12 @@ class SplitPanel extends PureComponent<any, any> {
             <ReflexContainer1 orientation="horizontal">
               <ReflexElement1 propagateDimensionsRate={20} propagateDimensions flex={0.55}>
                 <DBQuery
+                  onRef={this.onRefDBQuery}
                   dimensions={{}}
                   dbResultQueryGetResult={this.dbResultQueryGetResult}
                   tabPaneKey={this.props.tabPaneKey}
                   dbQueryData={this.props.dbQueryData}
+                  selectedTreeData={this.props.dbTreeData?.selectedNodeData}
                   cleanDataAndLocalStore={this.props.cleanDataAndLocalStore}
                 />
               </ReflexElement1>

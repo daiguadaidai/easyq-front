@@ -1,5 +1,5 @@
 import { Button, Col, Row } from 'antd';
-import { ClearOutlined, PlayCircleOutlined } from '@ant-design/icons';
+import { ClearOutlined, DatabaseOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import CodeMirror from '@uiw/react-codemirror';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 import { MySQL, sql } from '@codemirror/lang-sql';
@@ -13,17 +13,28 @@ class DBQuery extends React.PureComponent<any, any> {
     tabPaneKey: PropTypes.string,
     dbQueryData: PropTypes.any,
     cleanDataAndLocalStore: PropTypes.func,
+    selectedTreeData: PropTypes.any,
   };
 
   constructor(props: any) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      selectedTreeData: { ...props.selectedTreeData },
+    };
 
     this.getDBQueryDataHeight = this.getDBQueryDataHeight.bind(this);
     this.handleRun = this.handleRun.bind(this);
     this.handleCleanCache = this.handleCleanCache.bind(this);
   }
+
+  componentDidMount() {
+    this.props.onRef(this);
+  }
+
+  setStateWithOther = (state: any) => {
+    this.setState({ ...state });
+  };
 
   getDBQueryDataHeight = () => {
     const { height } = this.props.dimensions;
@@ -44,6 +55,15 @@ class DBQuery extends React.PureComponent<any, any> {
         <Row>
           <Col span={24} className="db-query-title-col">
             <span className="db-query-title-col-method">MySQL 查询</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <DatabaseOutlined />
+            <span className="db-query-title-col-method">
+              &nbsp;&nbsp;
+              {`${this.state?.selectedTreeData?.db_name}`}
+            </span>
+            <span>
+              {` - (${this.state?.selectedTreeData?.vip_port}) - [${this.state?.selectedTreeData?.cluster_name}]`}
+            </span>
           </Col>
         </Row>
         <Row>

@@ -1,7 +1,6 @@
 import { Button, Col, Row } from 'antd';
 import { ClearOutlined, DatabaseOutlined, PlayCircleOutlined } from '@ant-design/icons';
-import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
-import { events } from '@uiw/codemirror-extensions-events';
+import CodeMirror from '@uiw/react-codemirror';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 import { MySQL, sql } from '@codemirror/lang-sql';
 
@@ -14,8 +13,6 @@ const defaultDBQueryData = {
 };
 
 class DBQuery extends React.PureComponent<any, any> {
-  private editorRef = React.createRef<ReactCodeMirrorRef>();
-
   static propTypes = {
     tabPaneKey: PropTypes.string,
     dbQueryData: PropTypes.any,
@@ -36,10 +33,12 @@ class DBQuery extends React.PureComponent<any, any> {
           vip_port: ''
       },
       codeMirrorText: '',
+      tables: [],
     };
      */
     this.state = {
       selectedTreeData: { ...props.selectedTreeData },
+      tables: [],
       ...dbQueryData,
     };
 
@@ -73,6 +72,10 @@ class DBQuery extends React.PureComponent<any, any> {
   handleOnchange = (value: any) => {
     // 设置 code mirror 文本
     this.setState({ codeMirrorText: value });
+  };
+
+  handleCursorActivity = (editor: any) => {
+    console.log('Cursor position:', editor);
   };
 
   render() {
@@ -118,12 +121,18 @@ class DBQuery extends React.PureComponent<any, any> {
         <Row>
           <Col span={24}>
             <CodeMirror
-              ref={this.editorRef}
               className="db-query-codemiror"
               value={this.state.codeMirrorText}
               height={this.getDBQueryDataHeight()}
               editable={true}
-              extensions={[sql({ dialect: MySQL, upperCaseKeywords: true })]}
+              autoFocus={true}
+              basicSetup={{
+                foldGutter: false,
+                allowMultipleSelections: true,
+                indentOnInput: false,
+                autocompletion: true,
+              }}
+              extensions={[sql({ dialect: MySQL, schema: {}, tables: this.state.tables })]}
               theme={oneDarkTheme}
               onChange={(value) => this.handleOnchange(value)}
             />

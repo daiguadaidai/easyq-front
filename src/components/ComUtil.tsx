@@ -75,3 +75,11 @@ export function GetTableNode(privData: any, tableName: string) {
 export function GetTableNodes(privData: any, tableNames: string[]) {
   return tableNames.map((value) => GetTableNode(privData, value));
 }
+
+export function ConvertToQueryTable(tableNodes: any[]) {
+  const tables = tableNodes.map((tableNode) => {
+    return { label: tableNode.data.table_name };
+  });
+
+  return tables;
+}

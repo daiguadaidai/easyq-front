@@ -5,7 +5,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FindPrivTreesByUsername, FindTableNamesByUser } from '@/services/swagger/mysql_privs';
 import { getUser } from '@/utils/storage';
-import { GetTableNodes, MysqlPrivTreesToTreeNodes2 } from '@/components/ComUtil';
+import {
+  ConvertToQueryTable,
+  GetTableNodes,
+  MysqlPrivTreesToTreeNodes2,
+} from '@/components/ComUtil';
 import { Col, Input, message, Row } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
@@ -173,6 +177,12 @@ class DBTree extends React.PureComponent<any, any> {
     }
 
     this.setState({ privTrees, searchTrees });
+
+    // 如果当前节点是选中的节点则设置表
+    if (expandPrivTree.data.id === this.state?.selectedNodeData?.id) {
+      const tables = ConvertToQueryTable(tableNodes);
+      this.props.dbQuerySetState({ tables });
+    }
   };
 
   handleOnSelect = (item: any) => {
@@ -182,7 +192,20 @@ class DBTree extends React.PureComponent<any, any> {
     }
 
     this.setState({ selectedNodeData: item.data });
-    this.props.dbQuerySetState({ selectedTreeData: item.data });
+
+    // 获取选择的节点的 tables
+    const searchTreeLeng = this.state.searchTrees.length;
+    let tableNodes = [];
+    for (let i = 0; i < searchTreeLeng; i++) {
+      if (this.state.searchTrees[i].data.id === item.data.id) {
+        tableNodes = this.state.searchTrees[i].children;
+        break;
+      }
+    }
+
+    const tables = ConvertToQueryTable(tableNodes);
+
+    this.props.dbQuerySetState({ selectedTreeData: item.data, tables });
   };
 
   render() {

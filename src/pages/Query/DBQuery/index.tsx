@@ -1,6 +1,6 @@
-import { Button, Col, Row } from 'antd';
+import { Button, Col, message, Row } from 'antd';
 import { ClearOutlined, DatabaseOutlined, PlayCircleOutlined } from '@ant-design/icons';
-import CodeMirror from '@uiw/react-codemirror';
+import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 import { MySQL, sql } from '@codemirror/lang-sql';
 
@@ -13,6 +13,8 @@ const defaultDBQueryData = {
 };
 
 class DBQuery extends React.PureComponent<any, any> {
+  private codeMirrorRef = React.createRef<ReactCodeMirrorRef>();
+
   static propTypes = {
     tabPaneKey: PropTypes.string,
     dbQueryData: PropTypes.any,
@@ -40,12 +42,15 @@ class DBQuery extends React.PureComponent<any, any> {
       selectedTreeData: { ...props.selectedTreeData },
       tables: [],
       ...dbQueryData,
+      editorView: {},
+      editorState: {},
     };
 
     this.getDBQueryDataHeight = this.getDBQueryDataHeight.bind(this);
     this.handleRun = this.handleRun.bind(this);
     this.handleCleanCache = this.handleCleanCache.bind(this);
     this.handleOnchange = this.handleOnchange.bind(this);
+    this.getContext = this.getContext.bind(this);
   }
 
   componentDidMount() {
@@ -61,8 +66,34 @@ class DBQuery extends React.PureComponent<any, any> {
     return `${height - 56}px`;
   };
 
+  getContext = () => {
+    const content = this.codeMirrorRef.current?.view?.state.doc.toString();
+    const range = this.codeMirrorRef.current?.view?.state.selection.ranges.at(0);
+
+    if (!range) {
+      return { content };
+    }
+
+    const selectedContent = content?.substring(range.from, range.to);
+
+    return {
+      content,
+      selectedContent,
+    };
+  };
+
   handleRun = () => {
-    this.props.dbResultQueryGetResult();
+    const { content, selectedContent } = this.getContext();
+    let execContent = '';
+    if (selectedContent && selectedContent.trim().length !== 0) {
+      execContent = selectedContent;
+    } else if (content && content.trim().length !== 0) {
+      execContent = content;
+    } else {
+      message.error('没有获取到可执行的sql内容, 可执行sql内容为空.');
+      return;
+    }
+    console.log('handleRun: execContent', execContent);
   };
 
   handleCleanCache = () => {
@@ -72,10 +103,6 @@ class DBQuery extends React.PureComponent<any, any> {
   handleOnchange = (value: any) => {
     // 设置 code mirror 文本
     this.setState({ codeMirrorText: value });
-  };
-
-  handleCursorActivity = (editor: any) => {
-    console.log('Cursor position:', editor);
   };
 
   render() {
@@ -121,6 +148,7 @@ class DBQuery extends React.PureComponent<any, any> {
         <Row>
           <Col span={24}>
             <CodeMirror
+              ref={this.codeMirrorRef}
               className="db-query-codemiror"
               value={this.state.codeMirrorText}
               height={this.getDBQueryDataHeight()}
@@ -128,13 +156,15 @@ class DBQuery extends React.PureComponent<any, any> {
               autoFocus={true}
               basicSetup={{
                 foldGutter: false,
-                allowMultipleSelections: true,
                 indentOnInput: false,
                 autocompletion: true,
               }}
               extensions={[sql({ dialect: MySQL, schema: {}, tables: this.state.tables })]}
               theme={oneDarkTheme}
               onChange={(value) => this.handleOnchange(value)}
+              onCreateEditor={(view, state) =>
+                this.setState({ editorView: view, editorState: state })
+              }
             />
           </Col>
         </Row>

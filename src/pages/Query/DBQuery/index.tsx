@@ -1,13 +1,13 @@
 import { Button, Col, message, Row } from 'antd';
 import { ClearOutlined, DatabaseOutlined, PlayCircleOutlined } from '@ant-design/icons';
 import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
+import { keymap } from '@codemirror/view';
 import { oneDarkTheme } from '@codemirror/theme-one-dark';
 import { MySQL, sql } from '@codemirror/lang-sql';
 
 import './index.less';
 import React from 'react';
 import PropTypes from 'prop-types';
-import ex from 'umi/dist';
 import { textToSqls } from '@/services/swagger/util';
 
 const defaultDBQueryData = {
@@ -53,6 +53,7 @@ class DBQuery extends React.PureComponent<any, any> {
     this.handleCleanCache = this.handleCleanCache.bind(this);
     this.handleOnchange = this.handleOnchange.bind(this);
     this.getContext = this.getContext.bind(this);
+    this.getCustomKeymapExtensions = this.getCustomKeymapExtensions.bind(this);
   }
 
   componentDidMount() {
@@ -117,6 +118,20 @@ class DBQuery extends React.PureComponent<any, any> {
     this.setState({ codeMirrorText: value });
   };
 
+  getCustomKeymapExtensions = () => {
+    return [
+      keymap.of([
+        {
+          key: 'Ctrl-r',
+          run: () => {
+            this.handleRun();
+            return true;
+          },
+        },
+      ]),
+    ];
+  };
+
   render() {
     return (
       <div className="db-query-content">
@@ -142,7 +157,7 @@ class DBQuery extends React.PureComponent<any, any> {
               icon={<PlayCircleOutlined />}
               onClick={this.handleRun}
             >
-              运行
+              运行(Ctrl-r)
             </Button>
           </Col>
           <Col span={12} className="db-query-tool-col text-right">
@@ -170,6 +185,7 @@ class DBQuery extends React.PureComponent<any, any> {
                 foldGutter: false,
                 indentOnInput: false,
                 autocompletion: true,
+                defaultKeymap: false,
               }}
               extensions={[
                 sql({
@@ -178,6 +194,7 @@ class DBQuery extends React.PureComponent<any, any> {
                   upperCaseKeywords: true,
                   tables: this.state.tables,
                 }),
+                ...this.getCustomKeymapExtensions(),
               ]}
               theme={oneDarkTheme}
               onChange={(value) => this.handleOnchange(value)}

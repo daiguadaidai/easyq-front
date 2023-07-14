@@ -7,6 +7,8 @@ import { MySQL, sql } from '@codemirror/lang-sql';
 import './index.less';
 import React from 'react';
 import PropTypes from 'prop-types';
+import ex from 'umi/dist';
+import { textToSqls } from '@/services/swagger/util';
 
 const defaultDBQueryData = {
   codeMirrorText: '',
@@ -82,7 +84,7 @@ class DBQuery extends React.PureComponent<any, any> {
     };
   };
 
-  handleRun = () => {
+  handleRun = async () => {
     const { content, selectedContent } = this.getContext();
     let execContent = '';
     if (selectedContent && selectedContent.trim().length !== 0) {
@@ -93,7 +95,17 @@ class DBQuery extends React.PureComponent<any, any> {
       message.error('没有获取到可执行的sql内容, 可执行sql内容为空.');
       return;
     }
-    console.log('handleRun: execContent', execContent);
+
+    const result = await textToSqls({ text: execContent });
+    if (!result.success) {
+      return;
+    } else if (result.data.list.length === 0) {
+      message.error('解析后没有可执行sql');
+      return;
+    }
+
+    const sqlStrs = result.data.list;
+    console.log(sqlStrs);
   };
 
   handleCleanCache = () => {
@@ -159,7 +171,14 @@ class DBQuery extends React.PureComponent<any, any> {
                 indentOnInput: false,
                 autocompletion: true,
               }}
-              extensions={[sql({ dialect: MySQL, schema: {}, tables: this.state.tables })]}
+              extensions={[
+                sql({
+                  dialect: MySQL,
+                  schema: {},
+                  upperCaseKeywords: true,
+                  tables: this.state.tables,
+                }),
+              ]}
               theme={oneDarkTheme}
               onChange={(value) => this.handleOnchange(value)}
               onCreateEditor={(view, state) =>

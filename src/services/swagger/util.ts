@@ -12,3 +12,11 @@ export async function getDBResultUtil(body?: any, options?: { [key: string]: any
     ...(options || {}),
   });
 }
+
+export async function textToSqls(body?: any, options?: { [key: string]: any }) {
+  return request<ResponseData<CAPI.ResponseList<string>>>('/api/v1/utils/text-to-sqls', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+}

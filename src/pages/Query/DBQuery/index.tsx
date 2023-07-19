@@ -22,6 +22,7 @@ class DBQuery extends React.PureComponent<any, any> {
     dbQueryData: PropTypes.any,
     cleanDataAndLocalStore: PropTypes.func,
     selectedTreeData: PropTypes.any,
+    dbResultQueryGetResult: PropTypes.func,
   };
 
   constructor(props: any) {
@@ -106,7 +107,10 @@ class DBQuery extends React.PureComponent<any, any> {
     }
 
     const sqlStrs = result.data.list;
-    console.log(sqlStrs);
+    const sqlStrsLen = sqlStrs.length;
+    for (let i = 0; i < sqlStrsLen; i++) {
+      this.props.dbResultQueryGetResult(this.state.selectedTreeData.id, sqlStrs[i]);
+    }
   };
 
   handleCleanCache = () => {

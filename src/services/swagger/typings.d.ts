@@ -23,8 +23,10 @@ declare namespace CAPI {
 
   type DBResult = {
     column_names?: string[];
-    sql?: string;
+    exec_sql?: string;
     rows?: Map<string, object>[];
+    is_err?: boolean;
+    err_msg?: string;
   };
 
   type MetaCluster = {

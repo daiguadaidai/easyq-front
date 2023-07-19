@@ -4,9 +4,9 @@ import ResultTabMenu from './ResultTabMenu';
 import ResultTable2 from './ResultTable2';
 
 import './index.less';
-import { getDBResultUtil } from '@/services/swagger/util';
 import ResultTabCtxMenu from '@/pages/Query/DBResult/ResultTabMenu/ResultTabCtxMenu';
 import PropTypes from 'prop-types';
+import { execMysqlSql } from '@/services/swagger/mysql_exec';
 
 const { TabPane } = Tabs;
 const tabTitleHeight = 32;
@@ -18,12 +18,15 @@ const defaultState = {
     /*
     {
       key: '1',
-      sql: 'SELECT * FROM t',
+      query: 'SELECT * FROM t',
+      execSql: '',
       column_names: ['col_name_1'],
       columns: [{key:0, label:'col_name_1', width: 150}],
       rows: [
         {col_name_1: 'aacaca'}
       ],
+      isErr: false,
+      errMsg: '',
       loading: true,
       version: 0,
       scrollTop: 0,
@@ -126,7 +129,10 @@ class DBResult extends React.PureComponent<any, any> {
             columnNames={result.column_names}
             columns={result.columns}
             rows={result.rows}
-            sql={result.sql}
+            query={result.query}
+            execSql={result.execSql}
+            isErr={result.isErr}
+            errMsg={result.errMsg}
             loading={result.loading}
             version={result.version}
             scrollTop={result.scrollTop}
@@ -250,21 +256,23 @@ class DBResult extends React.PureComponent<any, any> {
   };
 
   // 查询sql并且获取结果
-  queryGetResult = (metaClusterId: number, dbName: string, sql: string) => {
+  queryGetResult = (priv_id: number, query: string) => {
     // 计算需要新增的result tab
     const resultMaxKey = this.state.resultMaxKey + 1;
     const resultActiveKey = `${this.state.resultMaxKey}`;
     // 新生成tab数据
     const resultTab = {
       key: resultActiveKey,
-      sql: sql,
+      query,
+      execSql: '',
       column_names: [],
       columns: [],
       rows: [],
       loading: true,
       version: 0,
       scrollTop: 0,
-      errorMessage: '',
+      isErr: false,
+      errMsg: '',
     };
 
     // 设置一个空的resultTab
@@ -295,23 +303,27 @@ class DBResult extends React.PureComponent<any, any> {
           return;
         }
 
-        const rs = await getDBResultUtil({ sql, meta_cluster_id: metaClusterId, db_name: dbName });
+        const rs = await execMysqlSql({ priv_id, query });
         let newResultTab = {};
         if (rs.success) {
           // 查询后获取新的数据
           newResultTab = {
             ...tmpResultTab,
-            sql: rs.data?.sql,
+            query,
+            execSql: rs.data?.exec_sql,
             column_names: rs.data?.column_names,
             columns: this.calcColumns(rs.data?.column_names, this.props.dimensions.width),
             rows: rs.data?.rows,
             loading: false,
+            isErr: rs.data?.is_err,
+            errMsg: rs.data?.err_msg,
           };
         } else {
           // 查询后获取新的数据
           newResultTab = {
             ...tmpResultTab,
-            sql: rs.data?.sql,
+            query,
+            execSql: rs.data?.exec_sql,
             loading: false,
             errorMessage: rs.message,
           };

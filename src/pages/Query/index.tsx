@@ -28,10 +28,13 @@ const defaultqueryTabPane = {
       /*
         {
           key: '1',
-          sql: 'SELECT * FROM t',
+          query: 'SELECT * FROM t',
+          execSql: 'SELECT * FROM t LIMIT 2000',
           column_names: ['col_name_1'],
           columns: [{ key: 0, label: 'col_name_1', width: 150 }],
           rows: [{ col_name_1: 'aacaca' }],
+          isErr: false,
+          errMsg: '',
           loading: true,
           version: 0,
           scrollTop: 0,

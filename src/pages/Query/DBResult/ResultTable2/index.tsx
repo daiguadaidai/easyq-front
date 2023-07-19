@@ -21,7 +21,10 @@ class ResultTable2 extends React.PureComponent<any, any> {
     columnNames: PropTypes.array,
     columns: PropTypes.array,
     rows: PropTypes.array,
-    sql: PropTypes.string,
+    query: PropTypes.string,
+    execSql: PropTypes.string,
+    isErr: PropTypes.bool,
+    errMsg: PropTypes.string,
     loading: PropTypes.bool,
     scrollTop: PropTypes.number,
     version: PropTypes.number,
@@ -37,6 +40,7 @@ class ResultTable2 extends React.PureComponent<any, any> {
     this.onCellContextMenu = this.onCellContextMenu.bind(this);
     this.handleOnScroll = this.handleOnScroll.bind(this);
     this.handleColumnResize = this.handleColumnResize.bind(this);
+    this.getTableCom = this.getTableCom.bind(this);
   }
 
   componentDidMount = () => {
@@ -51,23 +55,6 @@ class ResultTable2 extends React.PureComponent<any, any> {
 
   onStoreResultTableRef = (ref: any) => {
     this.storeResultTableRef = ref;
-  };
-
-  calcColumns = (columnNames: any, tableWidth: number) => {
-    const columns = [];
-    let width = 150;
-
-    if (columnNames && columnNames.length > 0) {
-      if (width * columnNames.length < tableWidth) {
-        width = tableWidth / columnNames.length;
-      }
-
-      for (let i = 0; i < columnNames.length; i++) {
-        columns.push({ key: i, label: columnNames[i], width });
-      }
-    }
-
-    return columns;
   };
 
   onCellContextMenu = (event: React.MouseEvent<HTMLElement>, cellInfo: any) => {
@@ -100,9 +87,19 @@ class ResultTable2 extends React.PureComponent<any, any> {
     this.storeResultTableRef.virStoreColumnWidth(dataKey, columnWidth);
   };
 
-  render() {
-    return (
-      <>
+  getTableCom = () => {
+    if (this.props.isErr) {
+      return (
+        <pre
+          className="err-pre"
+          style={{ height: this.props.height - 34, width: this.props.width }}
+        >
+          {this.props.errMsg}
+        </pre>
+      );
+    } else {
+      // 没有错误返回表格
+      return (
         <Table
           ref={this.tableRef}
           loading={this.props.loading}
@@ -146,9 +143,17 @@ class ResultTable2 extends React.PureComponent<any, any> {
             );
           })}
         </Table>
+      );
+    }
+  };
+
+  render() {
+    return (
+      <>
+        {this.getTableCom()}
         <Row>
           <Col span={12} className="result-table-footer-col-left">
-            <span onDoubleClick={this.onFooterDoubleClick}>{this.props.sql}</span>
+            <span onDoubleClick={this.onFooterDoubleClick}>{this.props.query}</span>
           </Col>
           <Col span={12} className="result-table-footer-col-right">
             总行数: {this.props.rows.length}

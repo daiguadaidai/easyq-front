@@ -53,8 +53,8 @@ class SplitPanel extends PureComponent<any, any> {
     this.dbResultRef = ref;
   };
 
-  dbResultQueryGetResult = () => {
-    this.dbResultRef.queryGetResult();
+  dbResultQueryGetResult = (priv_id: number, query: string) => {
+    this.dbResultRef.queryGetResult(priv_id, query);
   };
 
   onRefDBTree = (ref: any) => {

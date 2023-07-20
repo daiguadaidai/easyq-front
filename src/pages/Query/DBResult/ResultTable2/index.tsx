@@ -8,6 +8,20 @@ import PropTypes from 'prop-types';
 import StoreResultTable from '@/pages/Query/DBResult/ResultTable2/StoreResultTable';
 
 const { Column, HeaderCell, Cell } = Table;
+const CustomCell = ({ rowData, dataKey, onContextMenu, ...props }: any) => (
+  <Cell
+    {...props}
+    dataKey={dataKey}
+    onContextMenu={(e) =>
+      onContextMenu(e, {
+        columnName: dataKey,
+        row: rowData,
+      })
+    }
+  >
+    {rowData[dataKey]}
+  </Cell>
+);
 
 class ResultTable2 extends React.PureComponent<any, any> {
   private tableRef: any;
@@ -62,9 +76,9 @@ class ResultTable2 extends React.PureComponent<any, any> {
 
     // 点击事件发生时打开右键菜单
     const { pageX, pageY } = event;
-    const { key, label, cellData } = cellInfo;
+    const { columnName, row } = cellInfo;
 
-    console.log(`onContextMenu: rowIndex: ${key}, label: ${label}, data: ${cellData}`);
+    console.log(`onContextMenu: columnName: ${columnName}, row: `, row);
 
     const ctxStyle = {
       top: pageY,
@@ -128,17 +142,7 @@ class ResultTable2 extends React.PureComponent<any, any> {
                 >
                   {label}
                 </HeaderCell>
-                <Cell
-                  onContextMenu={(e) => {
-                    this.onCellContextMenu(e, {
-                      key,
-                      label,
-                      cellData: this.props.rows[key][label],
-                    });
-                  }}
-                  dataKey={label}
-                  style={{ padding: 4, fontSize: 10 }}
-                />
+                <CustomCell dataKey={label} onContextMenu={this.onCellContextMenu} />
               </Column>
             );
           })}
@@ -159,7 +163,11 @@ class ResultTable2 extends React.PureComponent<any, any> {
             总行数: {this.props.rows.length}
           </Col>
         </Row>
-        <ResultTableCtxMenu onRef={this.ctxMenu} />
+        <ResultTableCtxMenu
+          onRef={this.ctxMenu}
+          columns={this.props.columns}
+          rows={this.props.rows}
+        />
         <StoreResultTable
           columns={this.props.columns}
           onRef={this.onStoreResultTableRef}

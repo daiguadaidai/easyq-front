@@ -8,22 +8,20 @@ const menuHeight = 38 * 3;
 
 const items: MenuProps['items'] = [
   {
-    label: '表结构',
-    key: '表结构',
+    label: '导出 Excel (所有)',
+    key: '导出 Excel (所有)',
   },
   {
-    label: '表统计信息',
-    key: '表统计信息',
-  },
-  {
-    label: '索引统计信息',
-    key: '索引统计信息',
+    label: '导出 Excel (本行)',
+    key: '导出 Excel (本行)',
   },
 ];
 
 class ResultTableCtxMenu extends PureComponent<any, any> {
   static propTypes = {
     onRef: PropTypes.func,
+    columns: PropTypes.array,
+    rows: PropTypes.array,
   };
 
   constructor(props: any) {
@@ -34,12 +32,15 @@ class ResultTableCtxMenu extends PureComponent<any, any> {
       ctxStyle: {
         display: 'none',
       },
+      currRow: {
+        row: {},
+      },
     };
 
     this.showCtx = this.showCtx.bind(this);
   }
 
-  showCtx = (ctxStyle: any) => {
+  showCtx = (ctxStyle: any, otherData: any) => {
     const { top } = ctxStyle;
     if (window.innerHeight - top < menuHeight) {
       ctxStyle.top -= menuHeight;
@@ -48,6 +49,7 @@ class ResultTableCtxMenu extends PureComponent<any, any> {
     this.setState(
       {
         ctxStyle,
+        ...otherData,
       },
       () => {
         const onclick = () => {
@@ -71,12 +73,10 @@ class ResultTableCtxMenu extends PureComponent<any, any> {
 
   onMenuClick: MenuProps['onClick'] = (info) => {
     console.log('click ', info);
-    if (info.key === '表结构') {
-      console.log('表结构');
-    } else if (info.key === '表统计信息') {
-      console.log('表统计信息');
-    } else if (info.key === '索引统计信息') {
-      console.log('索引统计信息');
+    if (info.key === '导出 Excel (所有)') {
+      console.log('导出 Excel (所有)');
+    } else if (info.key === '导出 Excel (本行)') {
+      console.log('导出 Excel (本行)');
     }
   };
 

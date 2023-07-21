@@ -6,6 +6,7 @@ import 'rsuite/dist/rsuite.css';
 import ResultTableCtxMenu from '@/pages/Query/DBResult/ResultTable2/resultTableCtxMenu';
 import PropTypes from 'prop-types';
 import StoreResultTable from '@/pages/Query/DBResult/ResultTable2/StoreResultTable';
+import { DownloadExcelRows } from '@/components/ComUtil';
 
 const { Column, HeaderCell, Cell } = Table;
 const CustomCell = ({ rowData, dataKey, onContextMenu, ...props }: any) => (
@@ -55,6 +56,8 @@ class ResultTable2 extends React.PureComponent<any, any> {
     this.handleOnScroll = this.handleOnScroll.bind(this);
     this.handleColumnResize = this.handleColumnResize.bind(this);
     this.getTableCom = this.getTableCom.bind(this);
+    this.downloadExcelRows = this.downloadExcelRows.bind(this);
+    this.downloadExcelCurrRow = this.downloadExcelCurrRow.bind(this);
   }
 
   componentDidMount = () => {
@@ -76,9 +79,7 @@ class ResultTable2 extends React.PureComponent<any, any> {
 
     // 点击事件发生时打开右键菜单
     const { pageX, pageY } = event;
-    const { columnName, row } = cellInfo;
-
-    console.log(`onContextMenu: columnName: ${columnName}, row: `, row);
+    const { row } = cellInfo;
 
     const ctxStyle = {
       top: pageY,
@@ -86,7 +87,11 @@ class ResultTable2 extends React.PureComponent<any, any> {
       display: undefined,
     };
 
-    this.ctxMenuRef.showCtx(ctxStyle);
+    const data = {
+      row,
+    };
+
+    this.ctxMenuRef.showCtx(ctxStyle, { data });
   };
 
   onFooterDoubleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -99,6 +104,16 @@ class ResultTable2 extends React.PureComponent<any, any> {
 
   handleColumnResize = (columnWidth?: any, dataKey?: string) => {
     this.storeResultTableRef.virStoreColumnWidth(dataKey, columnWidth);
+  };
+
+  // 下载excel所有数据
+  downloadExcelRows = () => {
+    DownloadExcelRows(this.props.rows, this.props.columnNames);
+  };
+
+  // 下载 excel 当前行
+  downloadExcelCurrRow = (row: any) => {
+    DownloadExcelRows([row], this.props.columnNames);
   };
 
   getTableCom = () => {
@@ -165,6 +180,8 @@ class ResultTable2 extends React.PureComponent<any, any> {
         </Row>
         <ResultTableCtxMenu
           onRef={this.ctxMenu}
+          downloadExcelRows={this.downloadExcelRows}
+          downloadExcelCurrRow={this.downloadExcelCurrRow}
           columns={this.props.columns}
           rows={this.props.rows}
         />

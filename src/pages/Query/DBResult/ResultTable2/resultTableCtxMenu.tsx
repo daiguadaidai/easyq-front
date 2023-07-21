@@ -20,8 +20,8 @@ const items: MenuProps['items'] = [
 class ResultTableCtxMenu extends PureComponent<any, any> {
   static propTypes = {
     onRef: PropTypes.func,
-    columns: PropTypes.array,
-    rows: PropTypes.array,
+    downloadExcelRows: PropTypes.func,
+    downloadExcelCurrRow: PropTypes.func,
   };
 
   constructor(props: any) {
@@ -32,7 +32,7 @@ class ResultTableCtxMenu extends PureComponent<any, any> {
       ctxStyle: {
         display: 'none',
       },
-      currRow: {
+      data: {
         row: {},
       },
     };
@@ -72,11 +72,10 @@ class ResultTableCtxMenu extends PureComponent<any, any> {
   };
 
   onMenuClick: MenuProps['onClick'] = (info) => {
-    console.log('click ', info);
     if (info.key === '导出 Excel (所有)') {
-      console.log('导出 Excel (所有)');
+      this.props.downloadExcelRows();
     } else if (info.key === '导出 Excel (本行)') {
-      console.log('导出 Excel (本行)');
+      this.props.downloadExcelCurrRow(this.state.data.row);
     }
   };
 

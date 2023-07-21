@@ -1,6 +1,8 @@
 import { applyStatus, applyStatusMap } from '@/services/swagger/enum';
 import { Select, Tag } from 'antd';
 import { DatabaseOutlined, TableOutlined } from '@ant-design/icons';
+// @ts-ignore
+import ExportJsonExcel from 'js-export-excel';
 
 export function getApplyStatusTag(status: number) {
   let color = '';
@@ -82,4 +84,31 @@ export function ConvertToQueryTable(tableNodes: any[]) {
   });
 
   return tables;
+}
+
+// 下载excel所有数据
+export function DownloadExcelRows(rows: any, columnNames: any) {
+  const newRows = [];
+  for (const rowIndex in rows) {
+    const row = rows[rowIndex];
+    const newRow = {};
+    for (const columnIndex in columnNames) {
+      const columnName = columnNames[columnIndex];
+      newRow[columnName] = row[columnName];
+    }
+    newRows.push(newRow);
+  }
+
+  const options = {
+    fileName: `easyq-result-${new Date().getTime()}`,
+    datas: [
+      {
+        sheetData: newRows, // 数据
+        sheetHeader: columnNames, //表头
+      },
+    ],
+  };
+
+  const toExcel = new ExportJsonExcel(options);
+  toExcel.saveExcel();
 }

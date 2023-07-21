@@ -6,7 +6,7 @@ import 'rsuite/dist/rsuite.css';
 import ResultTableCtxMenu from '@/pages/Query/DBResult/ResultTable2/resultTableCtxMenu';
 import PropTypes from 'prop-types';
 import StoreResultTable from '@/pages/Query/DBResult/ResultTable2/StoreResultTable';
-import { DownloadExcelRows } from '@/components/ComUtil';
+import { DownloadExcelRows, DownLoadInsertSqlRows } from '@/components/ComUtil';
 
 const { Column, HeaderCell, Cell } = Table;
 const CustomCell = ({ rowData, dataKey, onContextMenu, ...props }: any) => (
@@ -58,6 +58,8 @@ class ResultTable2 extends React.PureComponent<any, any> {
     this.getTableCom = this.getTableCom.bind(this);
     this.downloadExcelRows = this.downloadExcelRows.bind(this);
     this.downloadExcelCurrRow = this.downloadExcelCurrRow.bind(this);
+    this.downLoadInsertSqlRows = this.downLoadInsertSqlRows.bind(this);
+    this.downLoadInsertSqlCurrRow = this.downLoadInsertSqlCurrRow.bind(this);
   }
 
   componentDidMount = () => {
@@ -114,6 +116,14 @@ class ResultTable2 extends React.PureComponent<any, any> {
   // 下载 excel 当前行
   downloadExcelCurrRow = (row: any) => {
     DownloadExcelRows([row], this.props.columnNames);
+  };
+
+  downLoadInsertSqlRows = (table_name: string) => {
+    DownLoadInsertSqlRows(table_name, this.props.columnNames, this.props.rows);
+  };
+
+  downLoadInsertSqlCurrRow = (table_name: string, row: any) => {
+    DownLoadInsertSqlRows(table_name, this.props.columnNames, [row]);
   };
 
   getTableCom = () => {
@@ -182,6 +192,8 @@ class ResultTable2 extends React.PureComponent<any, any> {
           onRef={this.ctxMenu}
           downloadExcelRows={this.downloadExcelRows}
           downloadExcelCurrRow={this.downloadExcelCurrRow}
+          downLoadInsertSqlRows={this.downLoadInsertSqlRows}
+          downLoadInsertSqlCurrRow={this.downLoadInsertSqlCurrRow}
           columns={this.props.columns}
           rows={this.props.rows}
         />

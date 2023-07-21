@@ -20,3 +20,12 @@ export async function textToSqls(body?: any, options?: { [key: string]: any }) {
     ...(options || {}),
   });
 }
+
+// 获取数据库结果的结果
+export async function getBatchInsertSql(body?: any, options?: { [key: string]: any }) {
+  return request<ResponseData<string>>('/api/v1/utils/get-batch-insert-sql', {
+    method: 'POST',
+    data: body,
+    ...(options || {}),
+  });
+}

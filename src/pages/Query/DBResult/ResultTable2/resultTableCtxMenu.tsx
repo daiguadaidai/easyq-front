@@ -1,5 +1,5 @@
 import { PureComponent } from 'react';
-import { Menu } from 'antd';
+import { Input, Menu, Modal } from 'antd';
 import type { MenuProps } from 'antd';
 import './index.less';
 import PropTypes from 'prop-types';
@@ -15,6 +15,14 @@ const items: MenuProps['items'] = [
     label: '导出 Excel (本行)',
     key: '导出 Excel (本行)',
   },
+  {
+    label: '导出 Insert Sql (所有)',
+    key: '导出 Insert Sql (所有)',
+  },
+  {
+    label: '导出 Insert Sql (本行)',
+    key: '导出 Insert Sql (本行)',
+  },
 ];
 
 class ResultTableCtxMenu extends PureComponent<any, any> {
@@ -22,6 +30,8 @@ class ResultTableCtxMenu extends PureComponent<any, any> {
     onRef: PropTypes.func,
     downloadExcelRows: PropTypes.func,
     downloadExcelCurrRow: PropTypes.func,
+    downLoadInsertSqlRows: PropTypes.func,
+    downLoadInsertSqlCurrRow: PropTypes.func,
   };
 
   constructor(props: any) {
@@ -35,6 +45,9 @@ class ResultTableCtxMenu extends PureComponent<any, any> {
       data: {
         row: {},
       },
+      insertSqlTable: '',
+      insertSqlTableVisible: false,
+      downloadInsertAll: false,
     };
 
     this.showCtx = this.showCtx.bind(this);
@@ -76,23 +89,48 @@ class ResultTableCtxMenu extends PureComponent<any, any> {
       this.props.downloadExcelRows();
     } else if (info.key === '导出 Excel (本行)') {
       this.props.downloadExcelCurrRow(this.state.data.row);
+    } else if (info.key === '导出 Insert Sql (所有)') {
+      this.setState({ insertSqlTableVisible: true, downloadInsertAll: true });
+    } else if (info.key === '导出 Insert Sql (本行)') {
+      this.setState({ insertSqlTableVisible: true, downloadInsertAll: false });
     }
   };
 
   render() {
     return (
-      <div
-        className={`easydb-dbtree-ctxmenu`}
-        style={{
-          zIndex: '999',
-          position: 'fixed',
-          backgroundColor: 'white',
-          boxShadow: '3px 3px 6px #999999',
-          ...this.state.ctxStyle,
-        }}
-      >
-        <Menu items={items} onClick={this.onMenuClick} />
-      </div>
+      <>
+        <div
+          className={`easydb-dbtree-ctxmenu`}
+          style={{
+            zIndex: '999',
+            position: 'fixed',
+            backgroundColor: 'white',
+            boxShadow: '3px 3px 6px #999999',
+            ...this.state.ctxStyle,
+          }}
+        >
+          <Menu items={items} onClick={this.onMenuClick} />
+        </div>
+        <Modal
+          title="请填写生成 Insert 语句的表名"
+          visible={this.state.insertSqlTableVisible}
+          onOk={() => {
+            if (this.state.downloadInsertAll) {
+              this.props.downLoadInsertSqlRows(this.state.insertSqlTable);
+            } else {
+              this.props.downLoadInsertSqlCurrRow(this.state.insertSqlTable, this.state.data.row);
+            }
+
+            this.setState({ insertSqlTableVisible: false });
+          }}
+          onCancel={() => this.setState({ insertSqlTableVisible: false })}
+        >
+          <Input
+            value={this.state.insertSqlTable}
+            onChange={(e) => this.setState({ insertSqlTable: e.target.value })}
+          />
+        </Modal>
+      </>
     );
   }
 }

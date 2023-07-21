@@ -3,6 +3,7 @@ import { Select, Tag } from 'antd';
 import { DatabaseOutlined, TableOutlined } from '@ant-design/icons';
 // @ts-ignore
 import ExportJsonExcel from 'js-export-excel';
+import { getBatchInsertSql } from '@/services/swagger/util';
 
 export function getApplyStatusTag(status: number) {
   let color = '';
@@ -111,4 +112,23 @@ export function DownloadExcelRows(rows: any, columnNames: any) {
 
   const toExcel = new ExportJsonExcel(options);
   toExcel.saveExcel();
+}
+
+export async function DownLoadInsertSqlRows(table_name: string, column_names: any, rows: any) {
+  const body = {
+    table_name,
+    column_names,
+    rows,
+  };
+  const rs = await getBatchInsertSql(body);
+  if (!rs.success || !rs?.data) {
+    return;
+  }
+
+  const element = document.createElement('a');
+  const file = new Blob([rs.data], { type: 'text/plain' });
+  element.href = URL.createObjectURL(file);
+  element.download = `easyq_insert_sql_down_${new Date().getTime()}.sql`;
+  document.body.appendChild(element); // required for this to work in FireFox
+  element.click();
 }

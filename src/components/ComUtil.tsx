@@ -35,19 +35,21 @@ export function getApplyStatusOptions() {
   return eles;
 }
 
-export function MysqlPrivTreesToTreeNodes2(privs: CAPI.MysqlPrivTree[]) {
+export function MysqlPrivTreesToTreeNodes2(privs: CAPI.MysqlPrivTree[], onContextMenu: any) {
   const trees = [];
   const len = privs.length;
   for (let i = 0; i < len; i++) {
+    const data = { type: 'db', ...privs[i] };
+
     const dataNode = {
       label: (
-        <>
+        <div onContextMenu={(e) => onContextMenu(e, data)}>
           <DatabaseOutlined />
           &nbsp;&nbsp;
           {`${privs[i].db_name}(${privs[i].vip_port})[${privs[i].cluster_name}]`}
-        </>
+        </div>
       ),
-      data: { type: 'db', ...privs[i] },
+      data,
       value: `${privs[i].id}`,
       children: [],
     };
@@ -58,19 +60,21 @@ export function MysqlPrivTreesToTreeNodes2(privs: CAPI.MysqlPrivTree[]) {
 }
 
 export function GetTableNode(privData: any, tableName: string) {
+  const data = {
+    ...privData.data,
+    type: 'table',
+    table_name: tableName,
+  };
+
   return {
     label: (
-      <>
+      <div>
         <TableOutlined />
         &nbsp;&nbsp;
         {tableName}
-      </>
+      </div>
     ),
-    data: {
-      ...privData.data,
-      type: 'table',
-      table_name: tableName,
-    },
+    data,
     value: tableName,
   };
 }

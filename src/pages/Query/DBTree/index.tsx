@@ -12,8 +12,11 @@ import {
 } from '@/components/ComUtil';
 import { Col, Input, message, Row } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
+import TreeCtxMenu from '@/pages/Query/DBTree/treeCtxMenu';
 
 class DBTree extends React.PureComponent<any, any> {
+  private treeCxtMenuRef: any;
+
   static propTypes = {
     tabPaneKey: PropTypes.string,
     dbTreeData: PropTypes.any,
@@ -44,6 +47,11 @@ class DBTree extends React.PureComponent<any, any> {
     this.searchDB = this.searchDB.bind(this);
     this.filterSearchPrivs = this.filterSearchPrivs.bind(this);
     this.handleOnSelect = this.handleOnSelect.bind(this);
+    this.dbAndTableOnContextMenu = this.dbAndTableOnContextMenu.bind(this);
+    this.onRefTreeCxtMenu = this.onRefTreeCxtMenu.bind(this);
+    this.reloadAllMysqlPrivs = this.reloadAllMysqlPrivs.bind(this);
+    this.reloadMysqlTables = this.reloadMysqlTables.bind(this);
+    this.setPrivTrees = this.setPrivTrees.bind(this);
   }
 
   componentDidMount = async () => {
@@ -51,20 +59,47 @@ class DBTree extends React.PureComponent<any, any> {
 
     if (this.props?.dbTreeData?.privs && this.props.dbTreeData.privs.length > 0) {
       // 有缓存数据则使用缓存
-      const privTrees = MysqlPrivTreesToTreeNodes2(this.props.dbTreeData.privs);
+      const privTrees = MysqlPrivTreesToTreeNodes2(
+        this.props.dbTreeData.privs,
+        this.dbAndTableOnContextMenu,
+      );
       const searchTrees = this.filterSearchPrivs(this.props.dbTreeData.searchKey, privTrees, true);
       this.setState({ privTrees, searchTrees });
     } else {
       // 没有缓存则新建
-      const user = getUser();
-
-      const privs = await FindPrivTreesByUsername({ username: user.username });
-      if (privs.success) {
-        const privTrees = MysqlPrivTreesToTreeNodes2(privs.data.list);
-        const searchTrees = [...privTrees];
-        this.setState({ privs: privs.data.list, privTrees, searchTrees });
-      }
+      this.setPrivTrees();
     }
+  };
+
+  onRefTreeCxtMenu = (ref: any) => {
+    this.treeCxtMenuRef = ref;
+  };
+
+  setPrivTrees = async () => {
+    // 没有缓存则新建
+    const user = getUser();
+
+    const privs = await FindPrivTreesByUsername({ username: user.username });
+    if (privs.success) {
+      const privTrees = MysqlPrivTreesToTreeNodes2(privs.data.list, this.dbAndTableOnContextMenu);
+      const searchTrees = this.filterSearchPrivs(this.props.dbTreeData.searchKey, privTrees, true);
+      this.setState({ privs: privs.data.list, privTrees, searchTrees });
+    }
+  };
+
+  dbAndTableOnContextMenu = (e: any, data: any) => {
+    e.preventDefault();
+
+    // 点击事件发生时打开右键菜单
+    const { pageX, pageY } = e;
+
+    const ctxStyle = {
+      top: pageY,
+      left: pageX,
+      display: undefined,
+    };
+
+    this.treeCxtMenuRef.showCtx(ctxStyle, { data });
   };
 
   getWidth = () => {
@@ -116,7 +151,7 @@ class DBTree extends React.PureComponent<any, any> {
     }
   };
 
-  handleOnExpand = async (expandItemValues: any[], item: any) => {
+  handleOnExpand = async (expandItemValues: any[], item: any, forceGetTables: boolean) => {
     if (item.expand) {
       // 关闭树
       return;
@@ -142,7 +177,7 @@ class DBTree extends React.PureComponent<any, any> {
     }
 
     // 判断子节点是否为空, 已经有表信息则直接返回
-    if (expandPrivTree.children.length > 0) {
+    if (expandPrivTree.children.length > 0 && !forceGetTables) {
       return;
     }
 
@@ -208,6 +243,14 @@ class DBTree extends React.PureComponent<any, any> {
     this.props.dbQuerySetState({ selectedTreeData: item.data, tables });
   };
 
+  reloadAllMysqlPrivs = () => {
+    this.setPrivTrees();
+  };
+
+  reloadMysqlTables = (nodeData: any) => {
+    this.handleOnExpand([`${nodeData.id}`], true, true);
+  };
+
   render() {
     return (
       <>
@@ -233,12 +276,19 @@ class DBTree extends React.PureComponent<any, any> {
               data={this.state.searchTrees}
               defaultValue={`${this.state?.selectedNodeData?.id}`}
               height={this.getHeight()}
-              onExpand={(expandItemValues, item) => this.handleOnExpand(expandItemValues, item)}
+              onExpand={(expandItemValues, item) =>
+                this.handleOnExpand(expandItemValues, item, false)
+              }
               onSelect={(item) => this.handleOnSelect(item)}
               defaultExpandAll
             />
           </Col>
         </Row>
+        <TreeCtxMenu
+          onRef={this.onRefTreeCxtMenu}
+          reloadAllMysqlPrivs={this.reloadAllMysqlPrivs}
+          reloadMysqlTables={this.reloadMysqlTables}
+        />
       </>
     );
   }
